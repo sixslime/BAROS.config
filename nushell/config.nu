@@ -17,4 +17,6 @@
 # options using:
 #     config nu --doc | nu-highlight | less -R
 
-alias z = cd
+# zoxide:
+zoxide init nushell | save -f ~/zoxide.nu
+source ~/zoxide.nu
