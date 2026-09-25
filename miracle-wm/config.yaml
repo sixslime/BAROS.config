@@ -1,7 +1,7 @@
 action_key: meta
 
 startup_apps:
-  - command: swaybg -i ~/refs/background"
+  - command: swaybg -i $HOME/refs/background
     restart_on_death: false
     in_systemd_scope: true
 
@@ -11,7 +11,7 @@ default_action_overrides:
   - name: terminal
     action: down
     modifiers:
-      - primary
+      - meta
     key: space
   - name: select_left
     action: down
@@ -66,8 +66,7 @@ default_action_overrides:
   - name: quit_compositor
     action: down
     modifiers:
-      - primary
-      - shift
+      - meta
     key: BackSpace
   # unbinds:
   - name: toggle_floating
