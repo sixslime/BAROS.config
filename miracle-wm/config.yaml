@@ -1,0 +1,93 @@
+action_key: meta
+
+startup_apps:
+  - command: swaybg -i $"($env.HOME)/refs/background
+    restart_on_death: true
+    in_systemd_scope: true
+
+terminal: alacritty
+
+default_action_overrides:
+  - name: terminal
+    action: down
+    modifiers:
+      - primary
+    key: Space
+  - name: select_left
+    action: down
+    modifiers:
+      - primary
+    key: o
+  - name: select_down
+    action: down
+    modifiers:
+      - primary
+    key: u
+  - name: select_up
+    action: down
+    modifiers:
+      - primary
+    key: a
+  - name: select_right
+    action: down
+    modifiers:
+      - primary
+    key: e
+  - name: move_left
+    action: down
+    modifiers:
+      - primary
+    key: O
+  - name: move_down
+    action: down
+    modifiers:
+      - primary
+    key: U
+  - name: move_up
+    action: down
+    modifiers:
+      - primary
+    key: A
+  - name: move_right
+    action: down
+    modifiers:
+      - primary
+    key: E
+  - name: quit_active_window
+    action: down
+    modifiers:
+      - primary
+    key: slash
+  - name: reload_config
+    action: down
+    modifiers:
+      - primary
+    key: R
+  - name: quit_compositor
+    action: down
+    modifiers:
+      - primary
+      - ctrl
+    key: BackSpace
+  # unbinds:
+  - name: toggle_floating
+    action: down
+    modifiers:
+      - primary
+    key: NoSymbol
+  - name: toggle_tabbing
+    action: down
+    modifiers:
+      - primary
+    key: NoSymbol
+  - name: toggle_stacking
+    action: down
+    modifiers:
+      - primary
+    key: NoSymbol
+  - name: magnifier_on
+    action: down
+    modifiers:
+      - primary
+    key: NoSymbol
+
