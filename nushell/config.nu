@@ -19,9 +19,9 @@
 
 # path:
 $env.path ++= [
-    "~/path",
+    ~/path,
 ];
 
 # zoxide:
-source ~/zoxide.nu;
+source ~/.zoxide.nu;
 alias cd = z
