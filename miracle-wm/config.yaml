@@ -1,7 +1,7 @@
 action_key: meta
 
 startup_apps:
-  - command: swaybg -i $HOME/refs/background
+  - command: swaybg -i /home/six/refs/background
     restart_on_death: false
     in_systemd_scope: true
 
