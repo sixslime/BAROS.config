@@ -1,7 +1,7 @@
 action_key: meta
 
 startup_apps:
-  - command: swaybg -i $"($env.HOME)/refs/background"
+  - command: swaybg -i ~/refs/background"
     restart_on_death: false
     in_systemd_scope: true
 
@@ -67,7 +67,7 @@ default_action_overrides:
     action: down
     modifiers:
       - primary
-      - ctrl
+      - shift
     key: BackSpace
   # unbinds:
   - name: toggle_floating
