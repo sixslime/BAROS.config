@@ -17,6 +17,12 @@
 # options using:
 #     config nu --doc | nu-highlight | less -R
 
+# path:
+$env.path ++= [
+    "~/path",
+];
+
 # zoxide:
-zoxide init nushell | save -f ~/zoxide.nu
-source ~/zoxide.nu
+zoxide init nushell | save -f ~/zoxide.nu;
+source ~/zoxide.nu;
+alias cd = z
