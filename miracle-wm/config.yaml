@@ -12,7 +12,7 @@ default_action_overrides:
     action: down
     modifiers:
       - primary
-    key: Space
+    key: space
   - name: select_left
     action: down
     modifiers:
@@ -74,20 +74,20 @@ default_action_overrides:
     action: down
     modifiers:
       - primary
-    key: NoSymbol
+    key: Arabic_0
   - name: toggle_tabbing
     action: down
     modifiers:
       - primary
-    key: NoSymbol
+    key: Arabic_0
   - name: toggle_stacking
     action: down
     modifiers:
       - primary
-    key: NoSymbol
+    key: Arabic_0
   - name: magnifier_on
     action: down
     modifiers:
       - primary
-    key: NoSymbol
+    key: Arabic_0
 
