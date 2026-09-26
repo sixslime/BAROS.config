@@ -7,6 +7,57 @@ startup_apps:
 
 terminal: alacritty
 
+inner_gaps:
+  x: 10
+  y: 10
+
+outer_gaps:
+  x: 10
+  y: 10
+
+border:
+  size: 2
+  color:
+    r: 230
+    g: 230
+    b: 230
+    a: 80
+  focus_color:
+    r: 230
+    g: 230
+    b: 230
+    a: 255
+  radius: 0
+
+enable_animations: false
+
+workspace_back_and_forth: false
+
+move_modifier:
+  - primary
+  - shift
+
+drag_and_drop:
+  enabled: false
+
+mouse:
+  handedness: right
+  vscroll_speed: 1.0
+  hscroll_speed: 1.0
+  acceleration_bias: 0.0
+  acceleration: none
+
+touchpad:
+  disable_while_typing: false
+  disable_with_external_mouse: false
+  acceleration_bias: 0.0
+  vscroll_speed: 1.0
+  hscroll_speed: 1.0
+  tap_to_click: false
+  middle_mouse_button_emulation: false
+  click_mode: finger_count
+  scroll_mode: two_finger_scroll
+
 default_action_overrides:
   - name: terminal
     action: down
