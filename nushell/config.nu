@@ -25,6 +25,9 @@ $env.path ++= [
 # zoxide:
 source ~/.zoxide.nu;
 
-# alaises
+# MIRACLESOCK temp fix:
+$env.MIRACLESOCK = (glob /run/user/(id -u)/miracle-wm-ipc.*.sock | get 0)
+
+# alaises:
 alias cd = z
 alias reboot = sudo reboot
