@@ -16,7 +16,7 @@ outer_gaps:
   y: 10
 
 border:
-  size: 2
+  size: 0
   color:
     r: 230
     g: 230
@@ -50,7 +50,7 @@ mouse:
 touchpad:
   disable_while_typing: false
   disable_with_external_mouse: false
-  acceleration_bias: 0.0
+  acceleration_bias: 1.0
   vscroll_speed: 1.0
   hscroll_speed: 1.0
   tap_to_click: false
