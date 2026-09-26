@@ -44,7 +44,7 @@ mouse:
   handedness: right
   vscroll_speed: 1.0
   hscroll_speed: 1.0
-  acceleration_bias: 0.0
+  acceleration_bias: 1.0
   acceleration: none
 
 touchpad:
