@@ -17,6 +17,14 @@
 # options using:
 #     config nu --doc | nu-highlight | less -R
 
+# import systemd env (from sway):
+let import_vars = ['SWAYSOCK', 'WAYLAND_DISPLAY', 'XDG_CURRENT_DESKTOP', 'DISPLAY']
+load-env (^systemctl --user show-environment
+    | lines
+    | split column '=' key value
+    | where key in $import_vars
+    | transpose -idr)
+
 # path:
 $env.path ++= [
     ~/path,
@@ -24,9 +32,6 @@ $env.path ++= [
 
 # zoxide:
 source ~/.zoxide.nu;
-
-# MIRACLESOCK temp fix:
-$env.MIRACLESOCK = (glob /run/user/(id -u)/miracle-wm-ipc.*.sock | get 0)
 
 # alaises:
 alias cd = z
