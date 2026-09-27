@@ -7,3 +7,6 @@ set $up a
 set $right e
 
 set $terminal alacritty
+
+# NixOS
+include /etc/sway/config.d/*
