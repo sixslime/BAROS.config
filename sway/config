@@ -1,12 +1,6 @@
-
 set $mod Mod4
 
-set $left o
-set $down u
-set $up a
-set $right e
-
-set $terminal alacritty
+include ./config.d/*
 
 # NixOS
 include /etc/sway/config.d/*

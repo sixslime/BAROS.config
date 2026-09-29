@@ -1,0 +1,5 @@
+
+output * {
+    background ~/refs/background fill #000000
+    scale 2
+}
