@@ -39,7 +39,7 @@ mode "resize" {
     bindsym $up resize shrink height 16px
     bindsym $right resize grow width 16px
 
-    bindsym $resize
+    bindsym $resize mode "default"
 }
 
 # SPECIAL
