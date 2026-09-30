@@ -5,6 +5,6 @@ default_border pixel 2
 default_floating_border pixel 2
 
 gaps outer 5
-gaps inner 7
+gaps inner 14
 smart_gaps off
 smart_borders off
