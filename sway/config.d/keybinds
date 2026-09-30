@@ -11,7 +11,7 @@ bindsym $mod+space exec $terminal
 
 bindsym $mod+l kill
 
-bindsym $mod+Control+0 reload
+bindsym $mod+Control+Enter reload
 
 bindsym $mod+Control+Escape exit
 
@@ -19,8 +19,8 @@ bindsym $mod+$left focus left
 bindsym $mod+$down focus down
 bindsym $mod+$up focus up
 bindsym $mod+$right focus right
-bindsym $mod+semicolon focus parent
-bindsym $mod+Shift+semicolon focus child
+bindsym $mod+i focus child
+bindsym $mod+Shift focus child
 
 bindsym $mod+Shift+$left move left
 bindsym $mod+Shift+$down move down
