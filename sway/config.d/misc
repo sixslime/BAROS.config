@@ -6,3 +6,6 @@ floating_modifier $mod
 focus_follows_mouse yes
 tiling_drag disable
 seat * hide_cursor when-typing enable
+
+default_border pixel 2
+default_floating_border pixel 2

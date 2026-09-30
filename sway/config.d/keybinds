@@ -19,14 +19,16 @@ bindsym $mod+$left focus left
 bindsym $mod+$down focus down
 bindsym $mod+$up focus up
 bindsym $mod+$right focus right
+bindsym $mod+semicolon focus parent
+bindsym $mod+Shift+semicolon focus child
 
 bindsym $mod+Shift+$left move left
 bindsym $mod+Shift+$down move down
 bindsym $mod+Shift+$up move up
 bindsym $mod+Shift+$right move right
 
-bindsym $mod+n splith
-bindsym $mod+Shift+n splitv
+bindsym $mod+Alt+$down splith
+bindsym $mod+Alt+$right splitv
 
 bindsym $mod+h fullsceen
 
