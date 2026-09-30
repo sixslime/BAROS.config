@@ -27,8 +27,8 @@ bindsym $mod+Shift+$down move down
 bindsym $mod+Shift+$up move up
 bindsym $mod+Shift+$right move right
 
-bindsym $mod+Alt+$down splith
-bindsym $mod+Alt+$right splitv
+bindsym $mod+Alt+$down splitv
+bindsym $mod+Alt+$right splith
 
 bindsym $mod+h fullsceen
 
