@@ -11,7 +11,7 @@ bindsym $mod+space exec $terminal
 
 bindsym $mod+l kill
 
-bindsym $mod+Control+Enter reload
+bindsym $mod+Control+Return reload
 
 bindsym $mod+Control+Escape exit
 
