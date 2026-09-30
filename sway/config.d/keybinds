@@ -9,7 +9,7 @@ set $resize r
 
 bindsym $mod+space exec $terminal
 
-bindsym $mod+underscore kill
+bindsym $mod+l kill
 
 bindsym $mod+Control+Return reload
 
