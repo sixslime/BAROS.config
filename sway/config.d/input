@@ -1,7 +1,7 @@
 
 input type:keyboard {
-    repeat_delay 550
-    repeat_rate 6
+    repeat_delay 400
+    repeat_rate 20
 }
 
 input type:touchpad {
