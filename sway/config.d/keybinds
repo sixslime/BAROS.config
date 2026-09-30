@@ -32,8 +32,6 @@ bindsym $mod+Alt+$right splitv
 
 bindsym $mod+h fullsceen
 
-bindsym $mod+i focus parent
-
 bindsym $mod+$resize mode "resize"
 mode "resize" {
     bindsym $left resize shrink width 16px
