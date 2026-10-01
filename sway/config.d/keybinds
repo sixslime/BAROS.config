@@ -22,13 +22,13 @@ bindsym $mod+$right focus right
 bindsym $mod+Shift+i focus child
 bindsym $mod+i focus parent
 
-bindsym $mod+Shift+$left move left
-bindsym $mod+Shift+$down move down
-bindsym $mod+Shift+$up move up
-bindsym $mod+Shift+$right move right
+bindsym $mod+Alt+$left move left
+bindsym $mod+Alt+$down move down
+bindsym $mod+Alt+$up move up
+bindsym $mod+Alt+$right move right
 
-bindsym $mod+Alt+$down splitv
-bindsym $mod+Alt+$right splith
+bindsym $mod+Shift+$down splitv
+bindsym $mod+Shift+$right splith
 
 bindsym $mod+h fullsceen
 
