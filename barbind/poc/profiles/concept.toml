@@ -1,0 +1,16 @@
+[[passes]]
+# escape can be omitted for none:
+capture = {start = '%', end = '%', escape = '\'}
+files = ["**"]
+[[passes.layers]]
+# can be omitted to match all files in current pass:
+files = ["**"]
+transform = { map = "map_1" }
+[[passes.layers]]
+# functions pass the capture to stdin and read stdout.
+transform = { function = 'func_1.nu' }
+[[passes.layers]]
+files = ["nvim/**"]
+transform = { map = "map_2"}
+[[passes.layers]]
+transform = { composite = 'sequence_1'}

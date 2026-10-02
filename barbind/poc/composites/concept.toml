@@ -1,0 +1,4 @@
+sequence = [
+    {map = 'foo'},
+    {function = 'bruh'}
+]

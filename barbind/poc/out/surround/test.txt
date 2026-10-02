@@ -1,0 +1,13 @@
+qux foo
+lim bar
+rem baz
+qux
+lim
+rem
+nothing
+nada%%bar%
+foo
+bar
+bruh
+%%foo
+AAA!!

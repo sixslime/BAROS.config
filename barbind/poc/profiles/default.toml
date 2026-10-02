@@ -1,0 +1,21 @@
+[[passes]]
+capture_end = '%'
+capture_escape_sequence = '/'
+capture_start = '%'
+files = ["**"]
+layers = [
+    { transform = { map = 'a' } },
+    { transform = { map = 'b' } },
+    { transform = { function = 'surround' }, files = [
+        './surround/**',
+    ] },
+]
+
+[[passes]]
+capture_end = '!'
+capture_escape_sequence = '/'
+capture_start = '!'
+files = ["**"]
+layers = [
+    { transform = { map = 'c' } },
+]

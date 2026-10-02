@@ -1,0 +1,13 @@
+AAA foo
+BBB bar
+CCC baz
+AAA
+BBB
+CCC
+nothing
+nada%%bar%
+foo
+bar
+bruh
+%%foo
+qux!!

@@ -1,0 +1,23 @@
+%foo% foo
+%bar% bar
+%baz% baz
+%FOO%
+%BAR%
+%BAZ%
+%nothing%
+%nada%
+nothing
+nada
+foo
+bar
+baz
+%/foo/%
+/%%bar%
+%baz/%filler%
+/%nothing/%
+!foo!
+!bar!
+!bruh!
+%!foo!%
+!%foo%!
+/!foo/!
