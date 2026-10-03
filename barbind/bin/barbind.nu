@@ -70,10 +70,9 @@ def applyLayers [
     | each { {key: $in, value: []}}
     | transpose -idr;
     mut registry = $resourceRegistry;
+    let capturePaths = $captureMap | columns;
     for $layer in $layers {
-        let applyingPaths = if $layer.files != null {
-            glob -D $layer.files | intersect ($captureMap) | columns
-        } else {$captureMap | columns};
+        let applyingPaths = if $layer.files != null { glob -D $layer.files | intersect $capturePaths } else { $capturePaths };
         for $applyingPath in $applyingPaths {
             let transformFetch = fetchTransformOperation $registry $layer.transform;
             $registry = $transformFetch.registry;
