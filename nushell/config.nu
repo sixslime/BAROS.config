@@ -18,7 +18,7 @@
 #     config nu --doc | nu-highlight | less -R
 
 # import systemd env (from sway):
-let import_vars = ['SWAYSOCK', 'WAYLAND_DISPLAY', 'XDG_CURRENT_DESKTOP', 'DISPLAY']
+let import_vars = ['SWAYSOCK', 'WAYLAND_DISPLAY', 'XDG_CURRENT_DESKTOP', 'DISPLAY', 'SSH_AUTH_SOCK']
 load-env (^systemctl --user show-environment
     | lines
     | split column '=' key value
