@@ -321,7 +321,8 @@ def loadResource [
         parent: ([$resourceRegistry.baseDir, $directory] | path join),
         stem: $resource,
         extension: 'toml',
-    };
+    }
+    | path join;
     
     let data = try { open $filePath };
     catch { error make $"'($resource)' in ($directory) \(($filePath)) could not be opened."}
