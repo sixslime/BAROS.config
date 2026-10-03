@@ -216,7 +216,7 @@ def fetchMapLookup [
 def fetchFunctionOperation [
     resourceRegistry: record<baseDir: string, map: record>,
     functionPath: string
-]: nothing -> record<registry: record<baseDir: string, map: record>, operation: record> {
+]: nothing -> record<registry: record<baseDir: string, map: record>, operation: closure> {
     let registryDirectory = 'functions';
     {
         registry: $resourceRegistry,
@@ -225,6 +225,7 @@ def fetchFunctionOperation [
             |^([$resourceRegistry.baseDir, $registryDirectory, $functionPath] | path join)
             | complete
             | get stdout
+        },
     }
 }
 
