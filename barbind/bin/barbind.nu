@@ -354,7 +354,7 @@ def getConfigDir [configDir?: string]: nothing -> string {
             | where (($it | path type) == dir)
             | first;
         };
-    if $configDir | is-empty {
+    if ($configDir | is-empty) {
         error make {
             msg: "No valid default config directories found. Use --configDir option."
         };
