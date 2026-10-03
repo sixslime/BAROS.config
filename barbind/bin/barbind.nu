@@ -376,7 +376,6 @@ def loadProfile [configDir: string, profilePath: string]: nothing -> record {
         }
     };
     open $filePath
-    | from toml
     | default {
         error make {
             msg: $"Could not parse profile file ($filePath)"
