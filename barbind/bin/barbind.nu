@@ -351,7 +351,7 @@ def getConfigDir [configDir?: string]: nothing -> string {
                 "/etc/barbind"
             ]
             | where $it != null
-            | where ($it | path type == dir)
+            | where (($it | path type) == dir)
             | first;
         };
     if $configDir | is-empty {
