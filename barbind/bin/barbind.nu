@@ -21,7 +21,7 @@ def main [
     mut fileMap = {};
 }
 
-def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profile: record] -> record<registry: record<baseDir: string, writes: record>> {
+def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profile: record]: nothing -> record<registry: record<baseDir: string, writes: record>> {
     try {
         $profile.passes | reduce -f {
             writes: {},
@@ -64,7 +64,7 @@ def applyLayers [
     resourceRegistry: record<baseDir: string, map: record>,
     captureMap: record,
     layers: list<record>
-] -> record<registry: record<baseDir: string, map: record>, captureMap: record> {
+]: nothing -> record<registry: record<baseDir: string, map: record>, captureMap: record> {
     mut operationMap: record = $captureMap
     | columns
     | each { {key: $in, value: []}}
