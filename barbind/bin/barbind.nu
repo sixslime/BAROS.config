@@ -346,12 +346,15 @@ def getConfigDir [configDir?: string]: nothing -> string {
     let configDir = $configDir
         | default {
             [
-                $"($env.XDG_CONFIG_HOME)/barbind",
-                $"($env.HOME)/.config/barbind",
+                ($env | get XDG_CONFIG_HOME -o | map { [$in, 'barbind'] | path join }),
+                ($env | get HOME -o | map { [$in, '.config', 'barbind'] | path join }),
                 "/etc/barbind"
-            ] | where {($in | path type) == dir} | first;
+            ]
+            | where $it != null
+            | where ($it | path type == dir)
+            | first;
         };
-    if $configDir == null {
+    if $configDir | is-empty {
         error make {
             msg: "No valid default config directories found. Use --configDir option."
         };
@@ -379,4 +382,8 @@ def loadProfile [configDir: string, profilePath: string]: nothing -> record {
             msg: $"Could not parse profile file ($filePath)"
         }
     }
+}
+
+def map [func: closure]: any -> any {
+    if $in == null { null } else { $in | do $func $in }
 }
