@@ -36,3 +36,6 @@ source ~/.zoxide.nu;
 # alaises:
 alias cd = z
 alias reboot = sudo reboot
+
+# ssh agent:
+ssh-add
