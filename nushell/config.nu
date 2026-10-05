@@ -37,11 +37,11 @@ $env.path ++= [
 source ~/.zoxide.nu;
 
 # alaises:
-alias cd = z
-alias reboot = sudo reboot
+alias cd = z;
+alias reboot = sudo reboot;
 
 # ssh agent:
-ssh-add
+ssh-add e+o>| ignore;
 
 # temp gg:
 export def gg [message: string = "-", --push (-p)] {

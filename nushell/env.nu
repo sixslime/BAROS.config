@@ -17,4 +17,7 @@
 # You can remove these comments if you want or leave
 # them for future reference.
 
+# login:
+if $nu.is-login { source ./login.nu };
+
 zoxide init nushell | save -f ~/.zoxide.nu;
