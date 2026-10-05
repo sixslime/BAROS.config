@@ -17,6 +17,9 @@
 # options using:
 #     config nu --doc | nu-highlight | less -R
 
+# remove welcome message:
+$env.config.show_banner = false;
+
 # import systemd env (from sway):
 let import_vars = ['SWAYSOCK', 'WAYLAND_DISPLAY', 'XDG_CURRENT_DESKTOP', 'DISPLAY']
 
@@ -39,9 +42,6 @@ source ~/.zoxide.nu;
 # alaises:
 alias cd = z;
 alias reboot = sudo reboot;
-
-# ssh agent:
-ssh-add e+o>| ignore;
 
 # temp gg:
 export def gg [message: string = "-", --push (-p)] {
