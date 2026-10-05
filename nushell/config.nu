@@ -19,11 +19,14 @@
 
 # import systemd env (from sway):
 let import_vars = ['SWAYSOCK', 'WAYLAND_DISPLAY', 'XDG_CURRENT_DESKTOP', 'DISPLAY']
+
+if (^id -u | into int) != 0 {
 load-env (^systemctl --user show-environment
     | lines
     | split column '=' key value
     | where key in $import_vars
     | transpose -idr)
+};
 
 # path:
 $env.path ++= [
@@ -39,3 +42,9 @@ alias reboot = sudo reboot
 
 # ssh agent:
 ssh-add
+
+# temp gg:
+export def gg [message: string = "-", --push (-p)] {
+  ^git commit -am $message;
+  if $push { ^git push };
+}

@@ -8,6 +8,7 @@ set $terminal alacritty
 set $resize r
 
 bindsym $mod+space exec $terminal
+bindsym $mod+Shift+space exec $terminal --command sudo -i
 
 bindsym $mod+l kill
 
@@ -30,7 +31,7 @@ bindsym $mod+Alt+$right move right
 bindsym $mod+Shift+$down splitv
 bindsym $mod+Shift+$right splith
 
-bindsym $mod+h fullsceen
+bindsym $mod+h fullsceen toggle
 
 bindsym $mod+$resize mode "resize"
 mode "resize" {
