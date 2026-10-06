@@ -15,9 +15,6 @@
 # Also see `help config env` for more options.
 #
 # You can remove these comments if you want or leave
-# them for future reference.
+# them for future reference
 
-# login:
-if $nu.is-login { source ./login.nu };
-
-zoxide init nushell | save -f ~/.zoxide.nu;
+zoxide init nushell --no-cmd | save -f ~/.zoxide.nu;

@@ -1,5 +1,5 @@
 
-exec brightnessctl s 25
+exec brightnessctl s 25%
 output * {
     background ~/refs/background fill #000000
     scale 2

@@ -38,9 +38,17 @@ $env.path ++= [
 
 # zoxide:
 source ~/.zoxide.nu;
+export alias hh = __zoxide_z;
+
+export def --env --wrapped h [...args] {
+  if ($args | length) > 0 {
+    __zoxide_z ...$args;
+  };
+  print $"[ (pwd) ]";
+  ls -ad
+}
 
 # alaises:
-alias cd = z;
 alias reboot = sudo reboot;
 
 # temp gg:
@@ -48,3 +56,4 @@ export def gg [message: string = "-", --push (-p)] {
   ^git commit -am $message;
   if $push { ^git push };
 }
+
