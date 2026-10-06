@@ -18,3 +18,4 @@
 # them for future reference
 
 zoxide init nushell --no-cmd | save -f ~/.zoxide.nu;
+$env.SHELL = (which nu | get 0 | get path);

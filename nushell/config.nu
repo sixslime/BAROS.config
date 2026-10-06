@@ -31,29 +31,43 @@ load-env (^systemctl --user show-environment
     | transpose -idr)
 };
 
+# remove right prompt:
+$env.PROMPT_COMMAND_RIGHT = { '' };
+
 # path:
 $env.path ++= [
     ~/path,
 ];
 
-# zoxide:
+# zoxide (h):
 source ~/.zoxide.nu;
-export alias hh = __zoxide_z;
-
 export def --env --wrapped h [...args] {
   if ($args | length) > 0 {
     __zoxide_z ...$args;
   };
+  clear;
   print $"[ (pwd) ]";
-  ls -ad
+  ls -ad | reject modified
 }
+export alias hh = h ~;
+export alias hi = h ..;
 
 # alaises:
 alias reboot = sudo reboot;
-
+alias here = swaymsg exec $"alacritty --working-directory (pwd)";
 # temp gg:
 export def gg [message: string = "-", --push (-p)] {
   ^git commit -am $message;
   if $push { ^git push };
 }
 
+# 'nixsh'
+export def --wrapped nixsh [...args] {
+  let split = $args | split list '--';
+  let packageArgs = $split | get 0 -o | each { $"nixpkgs#($in)" };
+  let restArgs = $split | get 1 -o;
+  nix shell ...$packageArgs ...$restArgs --command nu;
+}
+
+# end command:
+h

@@ -28,12 +28,11 @@ bindsym $mod+Alt+$down move down
 bindsym $mod+Alt+$up move up
 bindsym $mod+Alt+$right move right
 
-bindsym $mod+k split vertical
-bindsym $mod+j split horizontal
-bindsym $mod+Shift+k split none
-bindsym $mod+Shift+j split none
+bindsym $mod+h split vertical
+bindsym $mod+t split horizontal
+bindsym $mod+Shift+h split none
 
-bindsym $mod+h fullscreen toggle
+bindsym $mod+d fullscreen toggle
 
 bindsym $mod+$resize mode "resize"
 mode "resize" {
