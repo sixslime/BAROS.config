@@ -28,9 +28,9 @@ bindsym $mod+Alt+$down move down
 bindsym $mod+Alt+$up move up
 bindsym $mod+Alt+$right move right
 
-bindsym $mod+h split vertical
-bindsym $mod+t split horizontal
-bindsym $mod+Shift+h split none
+bindsym $mod+Control+u split vertical
+bindsym $mod+Control+e split horizontal
+bindsym $mod+Control+o split none
 
 bindsym $mod+d fullscreen toggle
 

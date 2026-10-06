@@ -57,6 +57,7 @@ alias reboot = sudo reboot;
 alias here = swaymsg exec $"alacritty --working-directory (pwd)";
 # temp gg:
 export def gg [message: string = "-", --push (-p)] {
+  ^git add -A;
   ^git commit -am $message;
   if $push { ^git push };
 }
