@@ -51,6 +51,10 @@ export def --env --wrapped h [...args] {
 }
 export alias hh = h ~;
 export alias hi = h ..;
+def formatLs []: record<name: string, type: string> -> record<name: string, T: string> {
+  $in
+  | select name type
+}
 
 # alaises:
 alias reboot = sudo reboot;
