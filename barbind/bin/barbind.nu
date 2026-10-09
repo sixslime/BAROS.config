@@ -2,26 +2,56 @@
 
 def main [
     profile: string,
-    targetDir: string,
+    readDir: string,
     outDir: string,
     --configDir (-c): string,
+    --verbose (-v): int = 0,
 ] {
-    let configDir: string = getConfigDir $configDir;
-    let targetDir: string = $targetDir | path expand;
-    let outDir: string = $outDir | path expand;
-    for $dirPath in [$targetDir, $outDir] {
-        if ($dirPath | path type) != dir {
-            error make {
-                msg: $"Directory does not exist: ($dirPath)"
+    with-env {
+        _BARBIND: {
+            logClosure: (createLogClosure $verbose),
+        }
+    } {
+        let configDir: string = getConfigDir $configDir;
+        log 1 $"Using config directory: ($configDir)"
+        let readDir: string = $readDir | path expand;
+        let outDir: string = $outDir | path expand;
+        for $dirPath in [$readDir, $outDir] {
+            if ($dirPath | path type) != dir {
+                error make {
+                    msg: $"Directory does not exist: ($dirPath)"
+                };
             };
         };
-    };
-    let profile: record = loadProfile $configDir $profile;
-    mut resourceRegistry: record<baseDir: string, map: record> = {baseDir: $configDir, map:{}};
-    mut fileMap = {};
+        let profile: record = loadProfile $configDir $profile;
+
+        cd $readDir;
+        let appliedProfile = applyProfile {baseDir: $configDir, map:{}} $profile;
+
+        cd $outDir;
+        $appliedProfile.writes
+        | par-each {|write|
+            let writePath = $write.path | path relative-to $readDir;
+            mkdir ($writePath | path dirname);
+            $write.text | save $writePath -f;
+            $writePath
+        }
+    }
 }
 
-def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profile: record]: nothing -> record<registry: record<baseDir: string, writes: record>> {
+def log [verbosityRequirement: int, message: any]: nothing -> nothing {
+    do $env._BARBIND.logClosure $verbosityRequirement $message;
+}
+
+def createLogClosure [verboseFlag: int]: nothing -> closure {
+    {|verbosityRequirement, message|
+        if $verboseFlag >= $verbosityRequirement {
+            $message | print;
+        };
+    }
+}
+
+def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profile: record]: nothing -> record<registry: record<baseDir: string, writes: table<path: string, text:string>>> {
     try {
         $profile.passes | reduce -f {
             writes: {},
@@ -43,11 +73,10 @@ def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profil
             let writes = $applied.captureMap
             | items {|path, segments|
                 {
-                    key: $path,
-                    value: ($segments | get text | str join),
+                    path: $path,
+                    text: ($segments | get text | str join),
                 }
-            }
-            | transpose -idr;
+            };
             {
                 registry: $applied.registry,
                 writes: $writes,
@@ -180,6 +209,7 @@ def fetchMapLookup [
     mapName: string,
     --inheritChain: list<string> = [],
 ]: nothing -> record<registry: record<baseDir: string, map: record>, lookup: record> {
+    log 1 $"> Creating lookup for map '($mapName)'"
     if $mapName in $inheritChain {
         error make {
             msg: $"Map inheritance loop: ($inheritChain | append $mapName | str join ' -> ')"
@@ -309,9 +339,11 @@ def loadResource [
     directory: string, 
     resource: string,
 ]: nothing -> record<registry: record<baseDir: string, map: record>, value: record<data: record>> {
+    log 1 $"> Fetching resource '($resource)' from config sub-directory '($directory)'";
     let resourcePath: cell-path = getRegistryResourcePath $directory $resource;
     let cached = $resourceRegistry | get $resourcePath -o;
     if $cached != null {
+        log 1 $"< Resource already cached."
         return {
             registry: $resourceRegistry,
             value: $cached,
@@ -323,7 +355,7 @@ def loadResource [
         extension: 'toml',
     }
     | path join;
-    
+    log 1 $" - Reading resource from ($filePath)"
     let data = try { open $filePath };
     catch { error make $"'($resource)' in ($directory) \(($filePath)) could not be opened."}
         | from toml;
@@ -331,10 +363,13 @@ def loadResource [
         data: $data,
     };
     let registry = $resourceRegistry | upsert $resourcePath $value;
-    return {
+    let o = {
         registry: $registry,
         value: $value,
     };
+    log 1 $"< Successfully loaded resource";
+    log 2 $data;
+    $o
 }
 
 def getConfigDir [configDir?: string]: nothing -> string {
@@ -363,6 +398,7 @@ def getConfigDir [configDir?: string]: nothing -> string {
 }
 
 def loadProfile [configDir: string, profilePath: string]: nothing -> record {
+    log 1 $"> Loading profile '($profilePath)'"
     let filePath = {
         parent: ([$configDir, "profiles"] | path join),
         stem: $profilePath,
@@ -375,12 +411,17 @@ def loadProfile [configDir: string, profilePath: string]: nothing -> record {
             msg: $"Profile '($profilePath)' does not exist \(expected file at ($filePath))"
         }
     };
-    open $filePath
+    
+    let o = open $filePath
     | default {
         error make {
             msg: $"Could not parse profile file ($filePath)"
         }
-    }
+    };
+
+    log 1 $"< Profile loaded from file: ($filePath)";
+    log 2 $o;
+    $o
 }
 
 def map [func: closure]: any -> any {
