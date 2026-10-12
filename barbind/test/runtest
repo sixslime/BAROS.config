@@ -1,7 +1,7 @@
 #!/env nu
 
 def main [profile: string] {
-    let testDir = ~/config/barbind/test;
+    let testDir = "~/config/barbind/test";
 
     ^barbind -v -c $"($testDir)/config" $profile $"($testDir)/read" $"($testDir)/out"
 }
