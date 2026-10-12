@@ -223,7 +223,7 @@ def getCaptureSegments [
             continue;
         };
         if $captureStarted {
-            let capturedText = $textBuffer | str substring -g ($lengths.start)..($nextIndexOf.capture - 1);
+            let capturedText = $textBuffer | str substring -g ..($nextIndexOf.capture - 1);
             let continueIndex = ($nextIndexOf.capture + $lengths.end);
             $segments = $segments | append {
                 text: $capturedText,
