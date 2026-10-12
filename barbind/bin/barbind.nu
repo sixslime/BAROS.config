@@ -171,7 +171,7 @@ def applyLayers [
 def getIdentityCaptureSegments [ text: string ]: nothing -> list<record<isCaptured:bool, text:string>> {
     [
         {
-            text: $text,
+            text: ($text),
             isCaptured: false,
         }
     ]
@@ -180,7 +180,6 @@ def getCaptureSegments [
     text: string, 
     capture: record<start: string, end: string, escape?: string>
 ]: nothing -> list<record<isCaptured:bool, text:string>> {
-    log 2 "CALL";
     mut textBuffer: string = $text;
     mut segments: list<record<isCaptured:bool, text:string>> = [];
     mut captureStarted = false;
