@@ -167,7 +167,7 @@ def applyLayers [
     }
 }
 
-def getIdentityCaptureSegments [ text: string ]: nothing -> table<text:string, isCaptured:bool> {
+def getIdentityCaptureSegments [ text: string ]: nothing -> list<record<isCaptured:bool, text:string>> {
     [
         {
             text: $text,
@@ -178,69 +178,68 @@ def getIdentityCaptureSegments [ text: string ]: nothing -> table<text:string, i
 def getCaptureSegments [
     text: string, 
     capture: record<start: string, end: string, escape?: string>
-]: nothing -> table<text:string, isCaptured:bool> {
-    try {
-        mut textBuffer: string = $text;
-        mut segments: list<record<isCaptured:bool, text:string>> = [];
-        mut captureStarted = false;
-        mut noRemainingEscapes = false;
-        let lengths = {
-            escape: (if $capture.escape != null {
-                $capture.escape | str length -g;
+]: nothing -> list<record<isCaptured:bool, text:string>> {
+    mut textBuffer: string = $text;
+    mut segments: list<record<isCaptured:bool, text:string>> = [];
+    mut captureStarted = false;
+    mut noRemainingEscapes = false;
+    let lengths = {
+        escape: (if $capture.escape != null {
+            $capture.escape | str length -g;
+        } else {
+            0
+        }),
+        start: ($capture.start | str length -g),
+        end: ($capture.end | str length -g),
+    };
+    loop {
+        let nextIndexOf = {
+            escape: (if ($noRemainingEscapes == false) and ($capture.escape != null) {
+                $textBuffer | str index-of $capture.escape -g
             } else {
-                0
+                $noRemainingEscapes = true;
+                -1
             }),
-            start: ($capture.start | str length -g),
-            end: ($capture.end | str length -g),
-        };
-        loop {
-            let nextIndexOf = {
-                escape: (if ($noRemainingEscapes == false) and ($capture.escape != null) {
-                    $textBuffer | str index-of $capture.escape -g
-                } else {
-                    $noRemainingEscapes = true;
-                    -1
-                }),
-                capture: ($textBuffer | str index-of -g (if $captureStarted {
-                    $capture.end
-                } else {
-                    $capture.start
-                })),
-            };
-            if $nextIndexOf.capture == -1 {
-                $segments = $segments | append {
-                    text: ($textBuffer | str replace -a $capture.escape ''),
-                    isCaptured: false,
-                };
-                break;
-            };
-            if ($nextIndexOf.escape != -1) and ($nextIndexOf.escape < $nextIndexOf.capture) {
-                let escapedCharIndex = ($nextIndexOf.escape + $lengths.escape);
-                let segmentText = [
-                    ($textBuffer | str substring -g ..($nextIndexOf.escape - 1)),
-                    ($textBuffer | str substring -g $escapedCharIndex..$escapedCharIndex),
-                ] | str join;
-                $segments = $segments | append {
-                    text: $segmentText,
-                    isCaptured: false,
-                };
-                $textBuffer = $textBuffer | str substring -g ($escapedCharIndex + 1)..;
-                continue;
-            };
-            if $captureStarted {
-                let capturedText = $textBuffer | str substring -g ($lengths.start)..($nextIndexOf.capture - 1);
-                let continueIndex = ($nextIndexOf.capture + $lengths.end);
-                $segments = $segments | append {
-                    text: $capturedText,
-                    isCaptured: true,
-                };
-                $textBuffer = $textBuffer | str substring -g ($continueIndex)..;
-                $captureStarted = false;
+            capture: ($textBuffer | str index-of -g (if $captureStarted {
+                $capture.end
             } else {
-                $captureStarted = true;
-            };
+                $capture.start
+            })),
         };
-    }
+        if $nextIndexOf.capture == -1 {
+            $segments = $segments | append {
+                text: ($textBuffer | str replace -a $capture.escape ''),
+                isCaptured: false,
+            };
+            break;
+        };
+        if ($nextIndexOf.escape != -1) and ($nextIndexOf.escape < $nextIndexOf.capture) {
+            let escapedCharIndex = ($nextIndexOf.escape + $lengths.escape);
+            let segmentText = [
+                ($textBuffer | str substring -g ..($nextIndexOf.escape - 1)),
+                ($textBuffer | str substring -g $escapedCharIndex..$escapedCharIndex),
+            ] | str join;
+            $segments = $segments | append {
+                text: $segmentText,
+                isCaptured: false,
+            };
+            $textBuffer = $textBuffer | str substring -g ($escapedCharIndex + 1)..;
+            continue;
+        };
+        if $captureStarted {
+            let capturedText = $textBuffer | str substring -g ($lengths.start)..($nextIndexOf.capture - 1);
+            let continueIndex = ($nextIndexOf.capture + $lengths.end);
+            $segments = $segments | append {
+                text: $capturedText,
+                isCaptured: true,
+            };
+            $textBuffer = $textBuffer | str substring -g ($continueIndex)..;
+            $captureStarted = false;
+        } else {
+            $captureStarted = true;
+        };
+    };
+    $segments
 }
 
 def fetchMapLookup [
