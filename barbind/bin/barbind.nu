@@ -233,13 +233,16 @@ def getCaptureSegments [
             $textBuffer = $textBuffer | str substring -g ($continueIndex)..;
         } else {
             $captureStarted = true;
-            if ($nextIndexOf.capture == 0) { continue; };
-            let capturedText = $textBuffer | str substring -g ..($nextIndexOf.capture - 1);
+            let capturedText = if ($nextIndexOf.capture > 0) {
+                $textBuffer | str substring -g ..($nextIndexOf.capture - 1)
+            } else { '' };
             let continueIndex = ($nextIndexOf.capture + $lengths.start);
-            $segments = $segments | append {
-                text: $capturedText,
-                isCaptured: false,
-            };
+            if not ($capturedText | is-empty) {
+                $segments = $segments | append {
+                    text: $capturedText,
+                    isCaptured: false,
+                };
+            }
             $textBuffer = $textBuffer | str substring -g ($continueIndex)..;
         };
     };
