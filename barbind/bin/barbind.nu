@@ -69,13 +69,17 @@ def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profil
             writes: {},
             registry: $resourceRegistry
         } { |pass, acc|
+            log 1 "> Starting pass";
             let passFilePaths: list<string> = $pass.files | each { glob $in -D } | flatten | uniq;
+            log 2 $pass;
             let captureMap = $passFilePaths
             | each { |passFilePath|
                 try {
+                    log 1 $" - on file ($passFilePath)";
                     let fileContents = $acc.writes
                     | get $passFilePath -o
                     | default { open $passFilePath -r };
+                    log 2 $"-- CONTENTS --\n ($fileContents)\n----------";
                     let captureSegments = if ($passFilePath | isBarbindFilePath) {
                         getCaptureSegments $fileContents $pass.capture
                     } else {
@@ -96,6 +100,7 @@ def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profil
                     text: ($segments | get text | str join),
                 }
             };
+            log 1 "< Ending pass";
             {
                 registry: $applied.registry,
                 writes: $writes,
@@ -105,7 +110,7 @@ def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profil
         error make {
             msg: "Error while applying profile."
         };
-    };    
+    };  
 }
 
 def applyLayers [
