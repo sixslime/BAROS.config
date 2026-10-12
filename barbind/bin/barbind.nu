@@ -250,7 +250,7 @@ def fetchMapLookup [
     };
     let registryDirectory = 'maps';
     let loaded = loadResource $resourceRegistry $registryDirectory $mapName;
-    if $loaded.value.lookup != null {
+    if $loaded.value.lookup? != null {
         return {
             registry: $loaded.registry,
             lookup: $loaded.value.lookup,
@@ -305,7 +305,7 @@ def fetchCompositeOperation [
     };
     let registryDirectory = 'composites';
     let loaded = loadResource $resourceRegistry $registryDirectory $compositeName;
-    if $loaded.value.operation != null {
+    if $loaded.value.operation? != null {
         return {
             registry: $loaded.registry,
             operation: $loaded.value.operation,
