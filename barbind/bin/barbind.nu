@@ -168,9 +168,6 @@ def applyLayers [
     }
 }
 
-def getIdentityCaptureSegments [ text: string ]: nothing -> list<record<text:string, isCaptured:bool>> {
-    [ { text: $text, isCaptured: false } ]
-}
 def getCaptureSegments [
     text: string, 
     capture: record<start: string, end: string, escape?: string>
@@ -241,6 +238,10 @@ def getCaptureSegments [
         };
     };
     $segments
+}
+
+def getIdentityCaptureSegments [ text: string ]: nothing -> list<record<text:string, isCaptured:bool>> {
+    [ { text: $text, isCaptured: false } ]
 }
 
 def fetchMapLookup [
