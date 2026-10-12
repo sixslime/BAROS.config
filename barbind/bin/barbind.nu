@@ -270,7 +270,7 @@ def fetchMapLookup [
     | update lookup {merge $data.map}
     | do {
         update registry {
-            upsert (getRegistryResourcePath $registryDirectory $mapName).lookup $in.lookup
+            upsert (getRegistryResourcePath $registryDirectory $mapName ['lookup']) $in.lookup
         }
     }
 }
@@ -322,7 +322,7 @@ def fetchCompositeOperation [
     }
     | do {
         update registry {
-            upsert (getRegistryResourcePath $registryDirectory $compositeName).operation $in.operation
+            upsert (getRegistryResourcePath $registryDirectory $compositeName ['operation']) $in.operation
         }
     }
 }
@@ -365,8 +365,9 @@ def fetchTransformOperation [
 def getRegistryResourcePath [
     directory: string,
     resource: string,
+    path: list<string> = [],
 ]: nothing -> cell-path {
-    ['map', $directory, $resource] | into cell-path
+    ['map', $directory, $resource] | append path | into cell-path
 }
 
 def loadResource [
