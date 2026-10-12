@@ -10,6 +10,7 @@ def main [
     with-env {
         _BARBIND: {
             logClosure: (createLogClosure $verbose),
+            barbindExtension: 'barbind',
         }
     } {
         let configDir: string = getConfigDir $configDir;
@@ -51,6 +52,9 @@ def createLogClosure [verboseFlag: int]: nothing -> closure {
     }
 }
 
+def isBarbindFilePath []: string -> bool {
+    ($in | path parse | get extension -o) == $env._BARBIND.barbindExtension
+}
 def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profile: record]: nothing -> record<registry: record<baseDir: string, writes: table<path: string, text:string>>> {
     try {
         $profile.passes | reduce -f {
@@ -60,13 +64,20 @@ def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profil
             let passFilePaths: list<string> = $pass.files | each { glob $in -D } | flatten | uniq;
             let captureMap = $passFilePaths
             | each { |passFilePath|
-                let captureSegments = try {
-                    getCaptureSegments ($acc.writes | get $passFilePath -o | default (open $passFilePath -r)) $pass.capture;
-                } catch { return null; };
-                {
-                    key: $passFilePath,
-                    value: $captureSegments,
-                }
+                try {
+                    let fileContents = $acc.writes
+                    | get $passFilePath -o
+                    | default { open $passFilePath -r };
+                    let captureSegments = if ($passFilePath | isBarbindFilePath) {
+                        getCaptureSegments $fileContents $pass.capture
+                    } else {
+                        getIdentityCaptureSegments $fileContents
+                    };
+                    {
+                        key: $passFilePath,
+                        value: $captureSegments,
+                    }
+                } catch { null }
             }
             | transpose -idr;
             let applied = applyLayers $acc.registry $captureMap $pass.layers;
@@ -136,6 +147,14 @@ def applyLayers [
     }
 }
 
+def getIdentityCaptureSegments [ text: string ]: nothing -> list<record<text:string, isCaptured:bool>> {
+    [
+        {
+            text: $text,
+            isCaptured: false,
+        }
+    ]
+}
 def getCaptureSegments [
     text: string, 
     capture: record<start: string, end: string, escape?: string>
