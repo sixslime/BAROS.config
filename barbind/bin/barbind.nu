@@ -166,7 +166,7 @@ def applyLayers [
     }
 }
 
-def getIdentityCaptureSegments [ text: string ]: nothing -> list<record<text:string, isCaptured:bool>> {
+def getIdentityCaptureSegments [ text: string ]: nothing -> table<text:string, isCaptured:bool> {
     [
         {
             text: $text,
@@ -177,7 +177,7 @@ def getIdentityCaptureSegments [ text: string ]: nothing -> list<record<text:str
 def getCaptureSegments [
     text: string, 
     capture: record<start: string, end: string, escape?: string>
-]: nothing -> list<record<text:string, isCaptured:bool>> {
+]: nothing -> table<text:string, isCaptured:bool> {
     try {
         mut textBuffer: string = $text;
         mut segments: list<record<isCaptured:bool, text:string>> = [];
