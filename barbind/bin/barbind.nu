@@ -168,7 +168,7 @@ def applyLayers [
 
 def getCaptureSegments [
     text: string, 
-    capture: record<start: string, end: string, escape?: string>
+    capture: record<start: string, end: string>
 ]: nothing -> list<record<text:string, isCaptured:bool>> {
     mut textBuffer: string = $text;
     mut segments: list<record<text:string, isCaptured:bool>> = [];
