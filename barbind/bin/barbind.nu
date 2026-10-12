@@ -120,7 +120,7 @@ def applyLayers [
     mut registry = $resourceRegistry;
     let capturePaths = $captureMap | columns;
     for $layer in $layers {
-        let applyingPaths = if $layer.files != null {
+        let applyingPaths = if $layer.files? != null {
             $layer.files
             | each { glob $in -D }
             | flatten
