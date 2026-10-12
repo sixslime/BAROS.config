@@ -269,8 +269,9 @@ def fetchMapLookup [
     }
     | update lookup {merge $data.map}
     | do {
+        let lookup = $in.lookup;
         update registry {
-            upsert (getRegistryResourcePath $registryDirectory $mapName ['lookup']) $in.lookup
+            upsert (getRegistryResourcePath $registryDirectory $mapName ['lookup']) $lookup
         }
     }
 }
