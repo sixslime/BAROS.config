@@ -3,5 +3,5 @@
 def main [profile: string] {
     let testDir = "/home/six/config/barbind/test";
 
-    ^barbind $profile $"($testDir)/read" $"($testDir)/out" -v -c $"($testDir)/config"
+    ^barbind $profile $"($testDir)/read" $"($testDir)/out" -v 1 -c $"($testDir)/config"
 }
