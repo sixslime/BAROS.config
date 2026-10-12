@@ -240,7 +240,7 @@ def getCaptureSegments [
             $captureStarted = true;
         };
     };
-    $segments
+    return $segments;
 }
 
 def fetchMapLookup [
