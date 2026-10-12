@@ -81,6 +81,7 @@ def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profil
                     | default { open $passFilePath -r };
                     log 2 $"-- CONTENTS --\n ($fileContents)\n----------";
                     let captureSegments = if ($passFilePath | isBarbindFilePath) {
+                        log 2 " - IS BARBIND FILE";
                         getCaptureSegments $fileContents $pass.capture
                     } else {
                         getIdentityCaptureSegments $fileContents
