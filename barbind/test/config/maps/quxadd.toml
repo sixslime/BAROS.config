@@ -1,0 +1,7 @@
+[meta]
+inherit = [
+    'foobarbaz'
+]
+
+[map]
+qux = 'QUX'
