@@ -419,7 +419,7 @@ def loadResource [
         value: $value,
     };
     log 1 $"< Successfully loaded resource";
-    log 2 $o;
+    log 2 $value;
     $o
 }
 
