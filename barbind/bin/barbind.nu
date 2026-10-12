@@ -80,11 +80,11 @@ def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profil
                 | default { open $passFilePath -r };
                 log 2 $"-- CONTENTS --\n ($fileContents)\n----------";
                 let captureSegments: list<record<text:string, isCaptured:bool>> = if ($passFilePath | isBarbindFilePath) {
-                    log 2 " - IS BARBIND FILE";
                     getCaptureSegments $fileContents $pass.capture
                 } else {
                     getIdentityCaptureSegments $fileContents
                 };
+                log 2 " - capture segments:";
                 log 2 $captureSegments;
                 {
                     key: $passFilePath,
@@ -183,7 +183,6 @@ def getCaptureSegments [
         start: ($capture.start | str length -g),
         end: ($capture.end | str length -g),
     };
-    log 2 "  > capture loop start"
     loop {
         let nextIndexOf = {
             escape: (if ($noRemainingEscapes == false) and ($capture.escape != null) {
@@ -198,10 +197,6 @@ def getCaptureSegments [
                 $capture.start
             })),
         };
-        log 2 " - segments:"
-        log 2 $segments;
-        log 2 " - next indicies:"
-        log 2 $nextIndexOf;
         if $nextIndexOf.capture == -1 {
             $segments = $segments | append {
                 text: ($textBuffer | str replace -a $capture.escape ''),
@@ -396,7 +391,8 @@ def loadResource [
     let resourcePath: cell-path = getRegistryResourcePath $directory $resource;
     let cached = $resourceRegistry | get $resourcePath -o;
     if $cached != null {
-        log 1 $"< Resource already cached."
+        log 1 $"< Resource already cached.";
+        log 2 $cached;
         return {
             registry: $resourceRegistry,
             value: $cached,
@@ -423,7 +419,7 @@ def loadResource [
         value: $value,
     };
     log 1 $"< Successfully loaded resource";
-    log 2 $data;
+    log 2 $o;
     $o
 }
 
