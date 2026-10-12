@@ -391,9 +391,12 @@ def loadResource [
     }
     | path join;
     log 1 $" - Reading resource from ($filePath)"
-    let data = try { open $filePath };
-    catch { error make $"'($resource)' in ($directory) \(($filePath)) could not be opened."}
-        | from toml;
+    let data = try { open $filePath } catch {
+        error make {
+            msg: $"'($resource)' in ($directory) \(($filePath)) could not be opened."
+        }
+    }
+    | from toml;
     let value = {
         data: $data,
     };
