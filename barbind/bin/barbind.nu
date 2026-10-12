@@ -332,7 +332,7 @@ def fetchTransformOperation [
     resourceRegistry: record<baseDir: string, map: record>,
     transform: record,
     --compositeChain: list<string> = [],
-]: nothing -> record<registry: record<baseDir: string, map: record>, operation: record> {
+]: nothing -> record<registry: record<baseDir: string, map: record>, operation: closure> {
     match $transform {
         {map: $mapName} => (
             let fetched = fetchMapLookup $resourceRegistry $mapName;
