@@ -414,6 +414,7 @@ def loadResource [
         data: $data,
     };
     let registry = $resourceRegistry | upsert $resourcePath $value;
+    log 2 ($registry | get $resourcePath -o);
     let o = {
         registry: $registry,
         value: $value,
