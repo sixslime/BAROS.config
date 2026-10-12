@@ -120,7 +120,13 @@ def applyLayers [
     mut registry = $resourceRegistry;
     let capturePaths = $captureMap | columns;
     for $layer in $layers {
-        let applyingPaths = if $layer.files != null { glob -D $layer.files | intersect $capturePaths } else { $capturePaths };
+        let applyingPaths = if $layer.files != null {
+            $layer.files
+            | each { glob $in -D }
+            | flatten
+            | uniq
+            | intersect $capturePaths
+        } else { $capturePaths };
         for $applyingPath in $applyingPaths {
             let transformFetch = fetchTransformOperation $registry $layer.transform;
             $registry = $transformFetch.registry;

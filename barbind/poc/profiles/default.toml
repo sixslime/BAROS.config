@@ -1,7 +1,5 @@
 [[passes]]
-capture_end = '%'
-capture_escape_sequence = '/'
-capture_start = '%'
+capture = {start = '%', end = '%', escape = '\'}
 files = ["**"]
 layers = [
     { transform = { map = 'a' } },

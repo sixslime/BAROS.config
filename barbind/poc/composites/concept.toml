@@ -1,4 +1,16 @@
+[meta]
+# this composite must be passed with 3 args via { composite = <this>, args = [<a>, <b>, <c>] }
+c_args = [
+    'a',
+    'b',
+    'c',
+]
+[composite]
 sequence = [
     {map = 'foo'},
-    {function = 'bruh'}
+    # can reference passed c_args via {c_arg = <name>}:
+    {function = 'bruh', args = ['static arg', {c_arg = 'a'}]},
+    {function = 'surround', args = [{c_arg = 'a'}, {c_arg = 'b'}]},
+    # can even be names of resources:
+    { map = {c_arg = 'c'}},
 ]

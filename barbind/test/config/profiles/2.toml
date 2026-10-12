@@ -1,0 +1,29 @@
+[[passes]]
+files = ['**']
+capture = {start = '(', end = ')', escape = '^'}
+layers = [
+    { transform = { map = 'foobarbaz' } },
+]
+
+[[passes]]
+files = ['**']
+capture = {start = '<', end = '>', escape = '^'}
+layers = [
+    { transform = { map = 'quxadd' } },
+    { transform = { function = 'surround', args = ['!', '?'] } },
+]
+
+[[passes]]
+files = ['**']
+capture = {start = '[', end = ']', escape = '^'}
+layers = [
+    { transform = { function = 'surround', args = ['~', '~'] } },
+    { transform = { function = 'surround', args = ['+', '+'] } },
+]
+
+[[passes]]
+files = ['**']
+capture = {start = '~', end = '~', escape = '^'}
+layers = [
+    { transform = { map = 'foobarbaz' } },
+]
