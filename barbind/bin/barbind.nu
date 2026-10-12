@@ -193,6 +193,7 @@ def getCaptureSegments [
         start: ($capture.start | str length -g),
         end: ($capture.end | str length -g),
     };
+    log 2 "  > capture loop start"
     loop {
         let nextIndexOf = {
             escape: (if ($noRemainingEscapes == false) and ($capture.escape != null) {
@@ -207,6 +208,10 @@ def getCaptureSegments [
                 $capture.start
             })),
         };
+        log 2 " - segments:"
+        log 2 $segments;
+        log 2 " - next indicies:"
+        log 2 $nextIndexOf;
         if $nextIndexOf.capture == -1 {
             $segments = $segments | append {
                 text: ($textBuffer | str replace -a $capture.escape ''),
@@ -240,7 +245,7 @@ def getCaptureSegments [
             $captureStarted = true;
         };
     };
-    return $segments;
+    $segments
 }
 
 def fetchMapLookup [
