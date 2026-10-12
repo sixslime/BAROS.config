@@ -32,7 +32,7 @@ def main [
         cd $outDir;
         $appliedProfile.writes
         | par-each {|write|
-            let writePath = $write.path | path relative-to $readDir;
+            let writePath = $write.path | path relative-to $readDir | stripBarbindExtension;
             mkdir ($writePath | path dirname);
             $write.text | save $writePath -f;
             $writePath
@@ -53,7 +53,15 @@ def createLogClosure [verboseFlag: int]: nothing -> closure {
 }
 
 def isBarbindFilePath []: string -> bool {
-    ($in | path parse | get extension -o) == $env._BARBIND.barbindExtension
+    str ends-with $".($env._BARBIND.barbindExtension)"
+}
+
+def stripBarbindExtension []: string -> string {
+    if ($in | isBarbindFilePath) {
+        str substring ..((($in | length) - 1) - (($env._BARBIND.barbindExtension | length) + 1))
+    } else {
+        $in
+    }
 }
 def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profile: record]: nothing -> record<registry: record<baseDir: string, writes: table<path: string, text:string>>> {
     try {
