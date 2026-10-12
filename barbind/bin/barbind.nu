@@ -74,24 +74,22 @@ def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profil
             log 2 $pass;
             let captureMap = $passFilePaths
             | each { |passFilePath|
-                try {
-                    log 1 $" - on file ($passFilePath)";
-                    let fileContents = $acc.writes
-                    | get $passFilePath -o
-                    | default { open $passFilePath -r };
-                    log 2 $"-- CONTENTS --\n ($fileContents)\n----------";
-                    let captureSegments: list<record<text:string, isCaptured:bool>> = if ($passFilePath | isBarbindFilePath) {
-                        log 2 " - IS BARBIND FILE";
-                        getCaptureSegments $fileContents $pass.capture
-                    } else {
-                        getIdentityCaptureSegments $fileContents
-                    };
-                    log 2 $captureSegments;
-                    {
-                        key: $passFilePath,
-                        value: $captureSegments,
-                    }
-                } catch { null }
+                log 1 $" - on file ($passFilePath)";
+                let fileContents = $acc.writes
+                | get $passFilePath -o
+                | default { open $passFilePath -r };
+                log 2 $"-- CONTENTS --\n ($fileContents)\n----------";
+                let captureSegments: list<record<text:string, isCaptured:bool>> = if ($passFilePath | isBarbindFilePath) {
+                    log 2 " - IS BARBIND FILE";
+                    getCaptureSegments $fileContents $pass.capture
+                } else {
+                    getIdentityCaptureSegments $fileContents
+                };
+                log 2 $captureSegments;
+                {
+                    key: $passFilePath,
+                    value: $captureSegments,
+                }
             }
             | transpose -idr;
             let applied = applyLayers $acc.registry $captureMap $pass.layers;
