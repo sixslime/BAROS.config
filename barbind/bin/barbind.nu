@@ -80,7 +80,7 @@ def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profil
                     | get $passFilePath -o
                     | default { open $passFilePath -r };
                     log 2 $"-- CONTENTS --\n ($fileContents)\n----------";
-                    let captureSegments = if ($passFilePath | isBarbindFilePath) {
+                    let captureSegments: list<record<text:string, isCaptured:bool>> = if ($passFilePath | isBarbindFilePath) {
                         log 2 " - IS BARBIND FILE";
                         getCaptureSegments $fileContents $pass.capture
                     } else {
@@ -168,15 +168,15 @@ def applyLayers [
     }
 }
 
-def getIdentityCaptureSegments [ text: string ]: nothing -> list<record<isCaptured:bool, text:string>> {
-    [ { isCaptured: false, text: $text } ]
+def getIdentityCaptureSegments [ text: string ]: nothing -> list<record<text:string, isCaptured:bool>> {
+    [ { text: $text, isCaptured: false } ]
 }
 def getCaptureSegments [
     text: string, 
     capture: record<start: string, end: string, escape?: string>
-]: nothing -> list<record<isCaptured:bool, text:string>> {
+]: nothing -> list<record<text:string, isCaptured:bool>> {
     mut textBuffer: string = $text;
-    mut segments: list<record<isCaptured:bool, text:string>> = [];
+    mut segments: list<record<text:string, isCaptured:bool>> = [];
     mut captureStarted = false;
     mut noRemainingEscapes = false;
     let lengths = {
