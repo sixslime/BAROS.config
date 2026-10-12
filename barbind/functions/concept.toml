@@ -1,9 +1,0 @@
-[meta]
-# can be omitted for none:
-# last specified keys take priority:
-inherit = ['other_map']
-
-# map takes priority over inherits
-[map]
-foo = 'bar'
-x = 'a'

@@ -8,7 +8,8 @@ files = ["**"]
 transform = { map = "map_1" }
 [[passes.layers]]
 # functions pass the capture to stdin and read stdout.
-transform = { function = 'func_1.nu' }
+# 'args' get passed as positional args, may be omitted for none.
+transform = { function = 'surround.nu', args = ['(', ')'] }
 [[passes.layers]]
 files = ["nvim/**"]
 transform = { map = "map_2"}

@@ -263,14 +263,16 @@ def fetchMapLookup [
 
 def fetchFunctionOperation [
     resourceRegistry: record<baseDir: string, map: record>,
-    functionPath: string
+    functionPath: string,
+    args?: list<string>,
 ]: nothing -> record<registry: record<baseDir: string, map: record>, operation: closure> {
+    let args = $args | default [];
     let registryDirectory = 'functions';
     {
         registry: $resourceRegistry,
         operation: {
             $in
-            |^([$resourceRegistry.baseDir, $registryDirectory, $functionPath] | path join)
+            |(^([$resourceRegistry.baseDir, $registryDirectory, $functionPath] | path join) ...$args)
             | complete
             | get stdout
         },
@@ -327,7 +329,7 @@ def fetchTransformOperation [
             }
         ),
         {function: $functionName} => (
-            let fetched = fetchFunctionOperation $resourceRegistry $functionName;
+            let fetched = fetchFunctionOperation $resourceRegistry $functionName ($transform.args?);
             {
                 registry: $fetched.registry,
                 operation: $fetched.operation,
