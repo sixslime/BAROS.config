@@ -396,7 +396,6 @@ def loadResource [
             msg: $"'($resource)' in ($directory) \(($filePath)) could not be opened."
         }
     }
-    | from toml;
     let value = {
         data: $data,
     };
