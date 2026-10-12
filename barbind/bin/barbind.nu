@@ -209,7 +209,7 @@ def getCaptureSegments [
             };
             break;
         };
-        if ($nextIndexOf.escape != -1) and ($nextIndexOf.escape < $nextIndexOf.capture) {
+        if ($nextIndexOf.escape != -1) and ($nextIndexOf.escape < $nextIndexOf.capture) and (not $captureStarted) {
             let escapedCharIndex = ($nextIndexOf.escape + $lengths.escape);
             let segmentText = [
                 ($textBuffer | str substring -g ..($nextIndexOf.escape - 1)),
