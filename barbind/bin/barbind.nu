@@ -169,12 +169,7 @@ def applyLayers [
 }
 
 def getIdentityCaptureSegments [ text: string ]: nothing -> list<record<isCaptured:bool, text:string>> {
-    [
-        {
-            text: ($text),
-            isCaptured: false,
-        }
-    ]
+    [ { text: $text, isCaptured: false } ]
 }
 def getCaptureSegments [
     text: string, 
