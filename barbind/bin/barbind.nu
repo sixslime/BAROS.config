@@ -85,6 +85,7 @@ def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profil
                     } else {
                         getIdentityCaptureSegments $fileContents
                     };
+                    log 2 $" - captures:\n($captureSegments)";
                     {
                         key: $passFilePath,
                         value: $captureSegments,
