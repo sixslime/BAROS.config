@@ -148,7 +148,7 @@ def applyLayers [
         let outputSegments = $inputSegments
         | each {|segment|
             if $segment.isCaptured {
-                $operations | reduce -f $segment.text {|operation, text| do $operation $text }
+                $operations | reduce -f $segment.text {|operation, text| ($text | do $operation) }
             } else {
                 $segment.text;
             }
@@ -325,11 +325,11 @@ def fetchCompositeOperation [
     };
     let sequence = $loaded.value.data.sequence;
     $sequence
-    | reduce -f {registry: $loaded.registry, operation: {|x| $x}} {|transform, acc|
+    | reduce -f {registry: $loaded.registry, operation: { $in }} {|transform, acc|
         let fetched = fetchTransformOperation $acc.registry $transform --compositeChain ($compositeChain | append $compositeName);
         {
             registry: $fetched.registry,
-            operation: {do $fetched.operation (do $acc.operation $in)},
+            operation: { do $acc.operation | do $fetched.operation },
         }
     }
     | do {
@@ -349,8 +349,8 @@ def fetchTransformOperation [
             let fetched = fetchMapLookup $resourceRegistry $mapName;
             {
                 registry: $fetched.registry,
-                operation: {|text|
-                    $fetched.lookup | get $text -o | default $text;
+                operation: {
+                    $fetched.lookup | get $in -o | default $in
                 },
             }
         ),
