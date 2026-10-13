@@ -300,10 +300,16 @@ def fetchFunctionOperation [
     {
         registry: $resourceRegistry,
         operation: {
-            $in
-            |(^([$resourceRegistry.baseDir, $registryDirectory, $functionPath] | path join) ...$args)
-            | complete
-            | get stdout
+            let call = {
+                stdin: $in,
+                command: ([$resourceRegistry.baseDir, $registryDirectory, $functionPath] | path join),
+                args: $args,
+            }
+            log 2 $" > running function '($functionPath)'";
+            log 2 $call;
+            let result = $call.stdin | ^$call.command ...$args | complete;
+            log 2 $result;
+            $result.stdout
         },
     }
 }
