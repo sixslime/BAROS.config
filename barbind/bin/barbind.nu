@@ -351,6 +351,10 @@ def fetchTransformOperation [
             {
                 registry: $fetched.registry,
                 operation: {
+                    log 2 " - lookup:";
+                    log 2 $in;
+                    log 2 $fetched.lookup;
+                    log 2 $fetched.lookup | get $in -o;
                     $fetched.lookup | get $in -o | default $in
                 },
             }
