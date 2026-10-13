@@ -305,7 +305,7 @@ def fetchFunctionOperation [
                 args: ([$in] | append $args),
             };
             log 2 $" > running function '($functionPath)'";
-            log 2 $" $ ($call.command) ($args | str join ' ')";
+            log 2 $" $ ($call.command) ($call.args | str join ' ')";
             let result = run-external $call.command ...$call.args | complete;
             log 2 $result;
             $result.stdout
