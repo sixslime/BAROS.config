@@ -2,5 +2,5 @@
 
 def main [capture: string, left: string, right: string]: nothing -> string {
     # $in is the captured text.
-    $"($left)($capture)($right)"
+    print -n $"($left)($capture)($right)"
 }
