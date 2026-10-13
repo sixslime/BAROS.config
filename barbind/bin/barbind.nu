@@ -63,7 +63,7 @@ def stripBarbindExtension []: string -> string {
         $in
     }
 }
-def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profile: record]: nothing -> record<registry: record<baseDir: string, writes: table<path: string, text:string>>> {
+def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profile: record]: nothing -> record<registry: record<baseDir: string, map: record>, writes: table<path: string, text:string>> {
     try {
         $profile.passes | reduce -f {
             writes: {},
