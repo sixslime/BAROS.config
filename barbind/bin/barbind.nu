@@ -306,7 +306,7 @@ def fetchFunctionOperation [
             };
             log 2 $" > running function '($functionPath)'";
             log 2 $call;
-            let result = run-external $call.command ...$args | complete;
+            let result = run-external $call.command ...$call.args | complete;
             log 2 $result;
             $result.stdout
         },
