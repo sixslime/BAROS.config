@@ -275,7 +275,7 @@ def fetchMapLookup [
     | get meta.inherit -o
     | default []
     | reduce -f {registry: $loaded.registry, lookup: {}} {|inherit, acc|
-        let fetched = fetchMapLookup $acc.registry $inherit --inheritChain ($inheritChain | append $inherit);
+        let fetched = fetchMapLookup $acc.registry $inherit --inheritChain ($inheritChain | append $mapName);
         {
             registry: $fetched.registry,
             lookup: ($acc.lookup | merge $fetched.lookup),
