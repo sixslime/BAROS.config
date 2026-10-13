@@ -351,6 +351,8 @@ def fetchCompositeOperation [
         { key: $in.0, value: $in.1 }
     }
     | transpose -idr;
+    log 2 $" - c-arg map:";
+    log 2 $cArgMap;
     let sequence = $loaded.value.data.composite.sequence;
     $sequence
     | reduce -f {registry: $loaded.registry, operation: { $in }} {|transform, acc|
