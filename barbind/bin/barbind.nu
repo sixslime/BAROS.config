@@ -31,6 +31,7 @@ def main [
 
         cd $outDir;
         $appliedProfile.writes
+        | items {|k, v| {path: $k, text: $v} }
         | par-each {|write|
             let writePath = $write.path | path relative-to $readDir | stripBarbindExtension;
             mkdir ($writePath | path dirname);
@@ -63,10 +64,10 @@ def stripBarbindExtension []: string -> string {
         $in
     }
 }
-def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profile: record]: nothing -> record<registry: record<baseDir: string, map: record>, writes: table<path: string, text:string>> {
+def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profile: record]: nothing -> record<registry: record<baseDir: string, map: record>, writes: record> {
     try {
         $profile.passes | reduce -f {
-            writes: [],
+            writes: {},
             registry: $resourceRegistry
         } { |pass, acc|
             log 1 "> Starting pass";
@@ -76,8 +77,7 @@ def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profil
             | each { |passFilePath|
                 log 1 $" - on file ($passFilePath)";
                 let fileContents = $acc.writes
-                | get $passFilePath
-                | first
+                | get $passFilePath -o
                 | default { open $passFilePath -r };
                 log 2 $"-- CONTENTS --\n ($fileContents)\n----------";
                 let captureSegments: list<record<text:string, isCaptured:bool>> = if ($passFilePath | isBarbindFilePath) {
@@ -97,10 +97,11 @@ def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profil
             let writes = $applied.captureMap
             | items {|path, segments|
                 {
-                    path: $path,
-                    text: ($segments | get text | str join),
+                    key: $path,
+                    value: ($segments | get text | str join),
                 }
-            };
+            }
+            | transpose -idr;
             log 1 "< Ending pass";
             {
                 registry: $applied.registry,
