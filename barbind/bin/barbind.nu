@@ -332,7 +332,7 @@ def fetchCompositeOperation [
     let cArgs = $cArgs | default [];
     let cArgsKey = $cArgs | to text -n;
     let loaded = loadResource $resourceRegistry $registryDirectory $compositeName;
-    let cached = $loaded.value.argsMap? | map { get $cArgsKey -o } | map { where args == $cArgs } | first };
+    let cached = $loaded.value.argsMap? | map { get $cArgsKey -o } | map { where args == $cArgs } | first;
     if $cached != null {
         return {
             registry: $loaded.registry,
