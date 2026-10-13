@@ -377,7 +377,7 @@ def recursiveCMap [cArgMap: record]: any -> any {
         {c_arg: $cArgName} => (
             $cArgMap | get $cArgName -o | default {
                 error make {
-                    msg: $"No c-arg exists with identifier '($cRef)'",
+                    msg: $"No c-arg exists with identifier '($cArgName)'",
                 }
             }
         ),

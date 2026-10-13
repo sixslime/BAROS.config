@@ -2,5 +2,5 @@
 files = ['**']
 capture = {start = '(', end = ')'}
 layers = [
-    { transform = { map = 'foobarbaz' } },
+    { transform = { composite = 'quxhi' }},
 ]
