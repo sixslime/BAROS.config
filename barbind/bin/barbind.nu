@@ -135,7 +135,7 @@ def applyLayers [
         for $applyingPath in $applyingPaths {
             let transformFetch = fetchTransformOperation $registry $layer.transform;
             $registry = $transformFetch.registry;
-            $operationMap
+            $operationMap = $operationMap
             | upsert $applyingPath {append $transformFetch.operation};
         };
     };
