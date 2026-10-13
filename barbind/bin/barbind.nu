@@ -379,7 +379,7 @@ def getRegistryResourcePath [
     resource: string,
     path: list<string> = [],
 ]: nothing -> cell-path {
-    ['map', $directory, $resource] | append path | into cell-path
+    ['map', $directory, $resource] | append $path | into cell-path
 }
 
 def loadResource [
@@ -414,7 +414,6 @@ def loadResource [
         data: $data,
     };
     let registry = $resourceRegistry | upsert $resourcePath $value;
-    log 2 ($registry | get $resourcePath -o);
     let o = {
         registry: $registry,
         value: $value,
