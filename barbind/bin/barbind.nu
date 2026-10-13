@@ -400,7 +400,7 @@ def recursiveCMap [cArgMap: record]: any -> any {
             }
             | transpose -idr
         )
-        [] => (
+        [..] => (
             $in | each { recursiveCMap $cArgMap }
         ),
         _ => $in,
