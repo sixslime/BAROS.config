@@ -58,7 +58,7 @@ def isBarbindFilePath []: string -> bool {
 
 def stripBarbindExtension []: string -> string {
     if ($in | isBarbindFilePath) {
-        str substring ..((($in | length) - 1) - (($env._BARBIND.barbindExtension | length) + 1))
+        str substring ..((($in | str length) - 1) - (($env._BARBIND.barbindExtension | length) + 1))
     } else {
         $in
     }
