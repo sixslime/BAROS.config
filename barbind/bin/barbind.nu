@@ -322,7 +322,7 @@ def fetchCompositeOperation [
     compositeName: string,
     cArgs?: list<string>,
     --compositeChain: list<string> = [],
-]: nothing -> record<registry: record<baseDir: string, map: record>, operation: record> {
+]: nothing -> record<registry: record<baseDir: string, map: record>, operation: closure> {
     if $compositeName in $compositeChain {
         error make {
             msg: $"Composite reference loop: ($compositeChain | append $compositeName | str join ' -> ')"
