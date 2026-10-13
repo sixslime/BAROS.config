@@ -301,13 +301,12 @@ def fetchFunctionOperation [
         registry: $resourceRegistry,
         operation: {
             let call = {
-                stdin: $in,
                 command: ([$resourceRegistry.baseDir, $registryDirectory, $functionPath] | path join),
-                args: $args,
+                args: ([$in] | append $args),
             };
             log 2 $" > running function '($functionPath)'";
             log 2 $call;
-            let result = $call.stdin | run-external $call.command ...$args | complete;
+            let result = run-external $call.command ...$args | complete;
             log 2 $result;
             $result.stdout
         },

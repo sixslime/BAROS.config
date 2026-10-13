@@ -1,6 +1,6 @@
 #!/env nu
 
-def main [left: string, right: string]: string -> string {
+def main [capture: string, left: string, right: string]: nothing -> string {
     # $in is the captured text.
-    $"($left)($in)$($right)"
+    $"($left)($capture)($right)"
 }
