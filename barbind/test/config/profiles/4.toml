@@ -17,5 +17,5 @@ files = ['**']
 capture = {start = '[', end = ']'}
 layers = [
     { transform = { function = 'lowercase' } },
-    { transform = { composite = 'remap', args = ['foobarbaz', '-', '-'] } },
+    { transform = { composite = 'remap', args = ['numbers', '-', '-'] } },
 ]
