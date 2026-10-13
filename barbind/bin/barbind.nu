@@ -295,8 +295,8 @@ def fetchFunctionOperation [
     functionPath: string,
     args?: list<string>,
 ]: nothing -> record<registry: record<baseDir: string, map: record>, operation: closure> {
-    let args = $args | default [];
     let registryDirectory = 'functions';
+    let args = $args | default [];
     {
         registry: $resourceRegistry,
         operation: {
@@ -316,6 +316,7 @@ def fetchFunctionOperation [
 def fetchCompositeOperation [
     resourceRegistry: record<baseDir: string, map: record>,
     compositeName: string,
+    cArgs?: list<string>,
     --compositeChain: list<string> = [],
 ]: nothing -> record<registry: record<baseDir: string, map: record>, operation: record> {
     if $compositeName in $compositeChain {
@@ -324,25 +325,66 @@ def fetchCompositeOperation [
         };
     };
     let registryDirectory = 'composites';
+    let cArgs = $cArgs | default [];
+    let cArgsKey = $cArgs | to text -n;
     let loaded = loadResource $resourceRegistry $registryDirectory $compositeName;
-    if $loaded.value.operation? != null {
+    let cached = $loaded.value.argsMap? | map { get $cArgsKey -o } | map { where $in.args == $cArgs | first };
+    if $cached != null {
         return {
             registry: $loaded.registry,
-            operation: $loaded.value.operation,
+            operation: $cached.operation,
         };
     };
-    let sequence = $loaded.value.data.sequence;
+    let cArgIdentifiers = $loaded.value.data.meta?.c_args? | default [];
+    if ($cArgIdentifiers | length) != ($cArgs | length) {
+        error make {
+            msg: $"($cArgIdentifiers | length) c-args expected for composite '($compositeName)', but ($cArgs | length) were provided \(($cArgs))"
+        };
+    }
+    let cArgMap = $cArgIdentifiers
+    | zip $cArgs
+    | each {
+        { key: $in.0, value: $in.1 }
+    }
+    | transpose -idr;
+    let sequence = $loaded.value.data.composite.sequence;
     $sequence
     | reduce -f {registry: $loaded.registry, operation: { $in }} {|transform, acc|
-        let fetched = fetchTransformOperation $acc.registry $transform --compositeChain ($compositeChain | append $compositeName);
+        let mappedTransform = $transform
+        | items {|key, value|
+            let cRef = $value | get c_arg -o;
+            let mappedValue = if $cRef == null {
+                $value
+            } else {
+                $cArgMap | get $cRef -o | default {
+                    error make {
+                        msg: $"No c-arg exists with identifier '($cRef)'"
+                    };
+                }
+            };
+            {
+                key: $key,
+                value: $mappedValue,
+            }
+        }
+        | transpose -idr;
+        let fetched = fetchTransformOperation $acc.registry $mappedTransform --compositeChain ($compositeChain | append $compositeName);
         {
             registry: $fetched.registry,
             operation: { do $acc.operation | do $fetched.operation },
         }
     }
     | do {
+        let operation = $in.operation;
         update registry {
-            upsert (getRegistryResourcePath $registryDirectory $compositeName ['operation']) $in.operation
+            upsert (getRegistryResourcePath $registryDirectory $compositeName ['argsMap', $cArgsKey]) {|keyEntry|
+                $keyEntry
+                | default []
+                | append {
+                    args: $cArgs,
+                    operation: $operation,
+                }
+            }
         }
     }
 }
