@@ -1,7 +1,7 @@
 #!/env nu
 
-def main [profile: string] {
+def main [profile: string, --verbose (-v): int = 2] {
     let testDir = "/home/six/config/barbind/test";
 
-    ^barbind $profile $"($testDir)/read" $"($testDir)/out" -v 2 -c $"($testDir)/config"
+    ^barbind $profile $"($testDir)/read" $"($testDir)/out" -v $verbose -c $"($testDir)/config"
 }
