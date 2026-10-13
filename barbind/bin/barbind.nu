@@ -304,7 +304,7 @@ def fetchFunctionOperation [
                 command: ([$resourceRegistry.baseDir, $registryDirectory, $functionPath] | path join),
                 args: ([$in] | append $args),
             };
-            log 2 $" > running function '($functionPath)'";
+            log 2 $" - function '($functionPath)':";
             log 2 $" $ ($call.command) ($call.args | str join ' ')";
             let result = run-external $call.command ...$call.args | complete;
             log 2 $result;
