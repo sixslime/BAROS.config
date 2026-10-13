@@ -1,5 +1,5 @@
 #!/env nu
 
 def main [capture: string] {
-    print ($capture | str downcase);
+    print -n ($capture | str lowercase);
 }
