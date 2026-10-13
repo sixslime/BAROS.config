@@ -66,7 +66,7 @@ def stripBarbindExtension []: string -> string {
 def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profile: record]: nothing -> record<registry: record<baseDir: string, map: record>, writes: table<path: string, text:string>> {
     try {
         $profile.passes | reduce -f {
-            writes: {},
+            writes: [],
             registry: $resourceRegistry
         } { |pass, acc|
             log 1 "> Starting pass";
@@ -76,7 +76,8 @@ def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profil
             | each { |passFilePath|
                 log 1 $" - on file ($passFilePath)";
                 let fileContents = $acc.writes
-                | get $passFilePath -o
+                | get $passFilePath
+                | first
                 | default { open $passFilePath -r };
                 log 2 $"-- CONTENTS --\n ($fileContents)\n----------";
                 let captureSegments: list<record<text:string, isCaptured:bool>> = if ($passFilePath | isBarbindFilePath) {
@@ -351,9 +352,9 @@ def fetchTransformOperation [
             {
                 registry: $fetched.registry,
                 operation: {
-                    let key = $in;
-                    if ($key | is-empty) { return $key };
-                    $fetched.lookup | get $key -o | default $key
+                    let capture = $in;
+                    if ($capture | is-empty) { return $capture };
+                    $fetched.lookup | get $capture -o | default $capture
                 },
             }
         ),
