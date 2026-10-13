@@ -369,7 +369,7 @@ def fetchCompositeOperation [
     }
     | do {
         let operation = $in.operation;
-        update registry {
+        $in | update registry {
             upsert (getRegistryResourcePath $registryDirectory $compositeName ['argsMap', $cArgsKey]) {|keyEntry|
                 $keyEntry
                 | default []
