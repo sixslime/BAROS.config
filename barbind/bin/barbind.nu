@@ -146,11 +146,12 @@ def applyLayers [
         let inputSegments = $captureMap | get $path -o;
         if $inputSegments == null { return null; }
         let outputSegments = $inputSegments
-        | each {|segment|
+        | update text {|segment|
             if $segment.isCaptured {
-                $operations | reduce -f $segment.text {|operation, text| ($text | do $operation) }
+                $operations
+                | reduce -f $segment.text {|operation, text| ($text | do $operation) }
             } else {
-                $segment.text;
+                $segment.text
             }
         };
         {
