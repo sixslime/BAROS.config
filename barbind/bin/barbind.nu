@@ -351,8 +351,9 @@ def fetchTransformOperation [
             {
                 registry: $fetched.registry,
                 operation: {
-                    if ($in | is-empty) { return $in };
-                    $fetched.lookup | get $in -o | default $in
+                    let key = $in;
+                    if ($key | is-empty) { return $key };
+                    $fetched.lookup | get $key -o | default $key
                 },
             }
         ),
