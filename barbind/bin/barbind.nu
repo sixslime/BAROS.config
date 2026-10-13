@@ -178,7 +178,7 @@ def getCaptureSegments [
     mut captureStarted = false;
     mut noRemainingEscapes = false;
     let lengths = {
-        escape: (if $capture.escape != null {
+        escape: (if $capture.escape? != null {
             $capture.escape | str length -g;
         } else {
             0
@@ -188,7 +188,7 @@ def getCaptureSegments [
     };
     loop {
         let nextIndexOf = {
-            escape: (if ($noRemainingEscapes == false) and ($capture.escape != null) {
+            escape: (if ($noRemainingEscapes == false) and ($capture.escape? != null) {
                 $textBuffer | str index-of $capture.escape -g
             } else {
                 $noRemainingEscapes = true;
@@ -202,7 +202,11 @@ def getCaptureSegments [
         };
         if $nextIndexOf.capture == -1 {
             $segments = $segments | append {
-                text: ($textBuffer | str replace -a $capture.escape ''),
+                text: (if $capture.escape? == null {
+                    $textBuffer
+                } else {
+                    $textBuffer | str replace -a $capture.escape ''
+                }),
                 isCaptured: false,
             };
             break;
