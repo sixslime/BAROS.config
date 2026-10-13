@@ -304,10 +304,10 @@ def fetchFunctionOperation [
                 stdin: $in,
                 command: ([$resourceRegistry.baseDir, $registryDirectory, $functionPath] | path join),
                 args: $args,
-            }
+            };
             log 2 $" > running function '($functionPath)'";
             log 2 $call;
-            let result = $call.stdin | ^$call.command ...$args | complete;
+            let result = $call.stdin | run-external $call.command ...$args | complete;
             log 2 $result;
             $result.stdout
         },
