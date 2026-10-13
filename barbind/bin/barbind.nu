@@ -345,12 +345,16 @@ def fetchCompositeOperation [
             msg: $"($cArgIdentifiers | length) c-args expected for composite '($compositeName)', but ($cArgs | length) were provided \(($cArgs))"
         };
     }
-    let cArgMap = $cArgIdentifiers
-    | zip $cArgs
-    | each {
-        { key: $in.0, value: $in.1 }
-    }
-    | transpose -idr;
+    let cArgMap = if ($cArgIdentifiers | is-empty) {
+        {}
+    } else {
+        $cArgIdentifiers
+        | zip $cArgs
+        | each {
+            { key: $in.0, value: $in.1 }
+        }
+        | transpose -idr;
+    };
     log 2 $" - c-arg map:";
     log 2 $cArgMap;
     let sequence = $loaded.value.data.composite.sequence;
