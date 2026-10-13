@@ -1,12 +1,24 @@
 (foo)
 (bar)
 (baz)
+(qux)
+(bim)
 foo
 bar
 baz
+qux
+bim
 <foo>
 <bar>
 <baz>
+<qux>
+<bim>
+
+[foo]
+[bar]
+[baz]
+[qux]
+[bim]
 
 ^(foo)
 ^(bar)
