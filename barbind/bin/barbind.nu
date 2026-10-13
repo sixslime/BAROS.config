@@ -361,6 +361,7 @@ def fetchCompositeOperation [
     $sequence
     | reduce -f {registry: $loaded.registry, operation: { $in }} {|transform, acc|
         let mappedTransform = $transform | recursiveCMap $cArgMap;
+        log 2 $" - cmap ($transform) -> ($mappedTransform)";
         let fetched = fetchTransformOperation $acc.registry $mappedTransform --compositeChain ($compositeChain | append $compositeName);
         {
             registry: $fetched.registry,
