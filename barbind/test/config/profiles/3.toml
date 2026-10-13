@@ -1,0 +1,6 @@
+[[passes]]
+files = ['**']
+capture = {start = '(', end = ')'}
+layers = [
+    { transform = { map = 'foobarbaz' } },
+]

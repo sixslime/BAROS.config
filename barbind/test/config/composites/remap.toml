@@ -1,0 +1,11 @@
+[meta]
+c_args = [
+    'map',
+    'left',
+    'right',
+]
+[composite]
+sequence = [
+    { map = {c_arg = 'map'} },
+    { function = 'surround', args = [{c_arg = 'left'}, {c_arg = 'right'}]},
+]

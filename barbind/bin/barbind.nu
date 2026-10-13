@@ -350,24 +350,7 @@ def fetchCompositeOperation [
     let sequence = $loaded.value.data.composite.sequence;
     $sequence
     | reduce -f {registry: $loaded.registry, operation: { $in }} {|transform, acc|
-        let mappedTransform = $transform
-        | items {|key, value|
-            let cRef = $value | get c_arg -o;
-            let mappedValue = if $cRef == null {
-                $value
-            } else {
-                $cArgMap | get $cRef -o | default {
-                    error make {
-                        msg: $"No c-arg exists with identifier '($cRef)'"
-                    };
-                }
-            };
-            {
-                key: $key,
-                value: $mappedValue,
-            }
-        }
-        | transpose -idr;
+        let mappedTransform = $transform | recursiveCMap $cArgMap;
         let fetched = fetchTransformOperation $acc.registry $mappedTransform --compositeChain ($compositeChain | append $compositeName);
         {
             registry: $fetched.registry,
@@ -389,6 +372,30 @@ def fetchCompositeOperation [
     }
 }
 
+def recursiveCMap [cArgMap: record]: any -> any {
+    match $in {
+        {c_arg: $cArgName} => (
+            $cArgMap | get $cArgName -o | default {
+                error make {
+                    msg: $"No c-arg exists with identifier '($cRef)'",
+                }
+            }
+        ),
+        {} => (
+            $in | items {|key, value|
+                {
+                    key: $key,
+                    value: ($value | recursiveCMap $cArgMap),
+                }
+            }
+            | transpose -idr
+        )
+        [] => (
+            $in | each { recursiveCMap $cArgMap }
+        ),
+        _ => $in,
+    }
+}
 def fetchTransformOperation [
     resourceRegistry: record<baseDir: string, map: record>,
     transform: record,
@@ -414,7 +421,7 @@ def fetchTransformOperation [
             }
         ),
         {composite: $compositeName} => (
-            let fetched = fetchCompositeOperation $resourceRegistry $compositeName --compositeChain $compositeChain;
+            let fetched = fetchCompositeOperation $resourceRegistry $compositeName ($transform.args?) --compositeChain $compositeChain;
             {
                 registry: $fetched.registry,
                 operation: $fetched.operation,
