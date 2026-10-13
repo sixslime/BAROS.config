@@ -154,7 +154,7 @@ def applyLayers [
             }
         };
         {
-            $path: $path,
+            path: $path,
             value: $outputSegments,
         }
     }
