@@ -1,6 +1,6 @@
 #!/env nu
 
-def main [capture: string, left: string, right: string]: nothing -> string {
+def main [capture: string, left: string, right: string] {
     # $in is the captured text.
     print -n $"($left)($capture)($right)"
 }
