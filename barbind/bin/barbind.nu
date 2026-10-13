@@ -133,7 +133,9 @@ def applyLayers [
             | uniq
             | intersect $capturePaths
         } else { $capturePaths };
-        log 1 $" > applying layer ($layer.transform) to ($applyingPaths | length) files";
+        log 1 $" > applying layer to ($applyingPaths | length) files";
+        log 2 $layer.transform;
+        log 2 $applyingPaths;
         for $applyingPath in $applyingPaths {
             let transformFetch = fetchTransformOperation $registry $layer.transform;
             $registry = $transformFetch.registry;
