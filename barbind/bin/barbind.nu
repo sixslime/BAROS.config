@@ -75,7 +75,6 @@ def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profil
             log 2 $pass;
             let captureMap = $passFilePaths
             | each { |passFilePath|
-                log 1 $" - on file ($passFilePath)";
                 let fileContents = $acc.writes
                 | get $passFilePath -o
                 | default { open $passFilePath -r };
@@ -102,7 +101,7 @@ def applyProfile [resourceRegistry: record<baseDir: string, map: record>, profil
                 }
             }
             | transpose -idr;
-            log 1 "< Ending pass";
+            log 1 "< End pass";
             {
                 registry: $applied.registry,
                 writes: $writes,
@@ -134,6 +133,7 @@ def applyLayers [
             | uniq
             | intersect $capturePaths
         } else { $capturePaths };
+        log 1 $" > applying layer ($layer.transform) to ($applyingPaths | length) files";
         for $applyingPath in $applyingPaths {
             let transformFetch = fetchTransformOperation $registry $layer.transform;
             $registry = $transformFetch.registry;
@@ -144,7 +144,10 @@ def applyLayers [
     let operationMap = $operationMap;
     let registry = $registry;
     let appliedMap = $operationMap
-    | items {|path, operations|
+    | items {|k, v| {path: $k, operations: $v} }
+    | par-each {
+        let path = $in.path;
+        let operations = $in.operations;
         let inputSegments = $captureMap | get $path -o;
         if $inputSegments == null { return null; }
         let outputSegments = $inputSegments
