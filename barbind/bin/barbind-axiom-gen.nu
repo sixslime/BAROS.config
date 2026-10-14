@@ -10,7 +10,7 @@ def main [
         }
     };
 
-    const modifierLayers = [
+    const modifierNames = [
         'meta',
         'alt',
         'control',
@@ -25,7 +25,7 @@ def main [
         },
     };
 
-    let layerModMap = $modifierLayers
+    let layerModMap = $modifierNames
     | each { { $in: [$in] } }
     | into record
     | merge ($axiom.keyboard.layout.layer
