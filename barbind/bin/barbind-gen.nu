@@ -75,7 +75,7 @@ def main [
         'maps/axiom/bindings/modifier.toml': (
             let map = $axiom.keyboard.aliases.modifiers | items {|alias, pos|
                 let press = $axiom.keyboard.layout.main | get $pos -o | default $pos;
-                let pressLayer = $axiom.keyboard.layout.main | get $pos.layer -o | default {
+                let pressLayer = try { $press | get layer } catch {
                     error make {
                         msg: $"modifier alias '($alias)' points to key-pos '($pos)', which is bound to '($press)'; expected a modifier layer \(ex: { layer = 'meta' })",
                     }
