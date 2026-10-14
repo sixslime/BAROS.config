@@ -2,9 +2,9 @@
 
 def main [
     profile: string,
-    readDir: string,
-    outDir: string,
-    --configDir (-c): string,
+    read_dir: string,
+    out_dir: string,
+    --config-dir (-c): string,
     --verbose (-v): int = 0,
 ] {
     with-env {
@@ -13,10 +13,10 @@ def main [
             barbindExtension: 'barbind',
         }
     } {
-        let configDir: string = getConfigDir $configDir;
+        let configDir: string = getConfigDir $config_dir;
         log 1 $"Using config directory: ($configDir)"
-        let readDir: string = $readDir | path expand;
-        let outDir: string = $outDir | path expand;
+        let readDir: string = $read_dir | path expand;
+        let outDir: string = $out_dir | path expand;
         for $dirPath in [$readDir, $outDir] {
             if ($dirPath | path type) != dir {
                 error make {
@@ -40,6 +40,10 @@ def main [
         }
         | sort
     }
+}
+
+def "main default-config-dir" []: nothing -> string {
+    getConfigDir
 }
 
 def log [verbosityRequirement: int, message: any]: nothing -> nothing {

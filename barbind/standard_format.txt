@@ -1,0 +1,23 @@
+
+something like:
+<[action]:(left)>
+
+gets axiom bound to:
+<#[alt]:#(o)>
+
+then gets program-specific bound to things like:
+- A-o
+- Alt+o
+
+functions could turn something like:
+<#[shift]:#(j)>
+
+into:
+J
+
+capture chars can and should probably be dynamic.
+
+cases:
+- multiple mods:
+    <#[alt]+#[meta]:#(left)>
+    ~ use '+'
