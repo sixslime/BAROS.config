@@ -28,15 +28,18 @@ def main [
     let layerModMap = $modifierLayers
     | each { { $in: [$in] } }
     | into record
-    | merge ($axiom.keyboard.layout.layer | columns | each {
-        match ($in | split row '--' -n 2) {
-            [$layer] => { $layer: [] },
-            [$layer, $modsStr] => {
-                $layer: ($modsStr | split row '+'),
-            },
-            _ => null,
+    | merge ($axiom.keyboard.layout.layer
+        | columns
+        | each {
+            match ($in | split row '--' -n 2) {
+                [$layer] => { $layer: [] },
+                [$layer, $modsStr] => {
+                    $layer: ($modsStr | split row '+'),
+                },
+                _ => null,
+            }
         }
-    });
+        | into record);
 
     let writes = {
         'maps/axiom/bindings/key_pos.toml': (
