@@ -98,9 +98,10 @@ def main [
     cd $configDir;
     $writes | items {|k, v| { path: ($k | path expand), content: $v } }
     | par-each {
-        mkdir ($in.path | path basename);
-        $in.content | save -f $in.path;
-        $in.path
+        let write = $in;
+        mkdir ($write.path | path basename);
+        $write.content | save -f $write.path;
+        $write.path
     }
     | sort
 }
