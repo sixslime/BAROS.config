@@ -99,7 +99,7 @@ def main [
     $writes | items {|k, v| { path: ($k | path expand), content: $v } }
     | par-each {
         let write = $in;
-        mkdir ($write.path | path basename);
+        mkdir ($write.path | path dirname);
         $write.content | save -f $write.path;
         $write.path
     }
