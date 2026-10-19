@@ -55,12 +55,6 @@ export alias hi = h ..;
 # alaises:
 alias reboot = sudo reboot;
 alias here = swaymsg exec $"alacritty --working-directory (pwd)";
-# temp gg:
-export def gg [message: string = "-", --push (-p)] {
-  ^git add -A;
-  ^git commit -am $message;
-  if $push { ^git push };
-}
 
 # 'nixsh'
 export def --wrapped nixsh [...args] {
@@ -69,6 +63,10 @@ export def --wrapped nixsh [...args] {
   let restArgs = $split | get 1 -o;
   nix shell ...$packageArgs ...$restArgs --command nu;
 }
+
+# use modules:
+use universal;
+use universal/standard_toplevel.nu;
 
 # end command:
 h
