@@ -28,7 +28,8 @@ def main [
     let layerModMap = $modifierNames
     | each { { $in: [$in] } }
     | into record
-    | merge ($axiom.keyboard.layout.layer
+    | merge (
+        $axiom.keyboard.layout.layer
         | columns
         | each {
             match ($in | split row '--' -n 2) {
@@ -39,7 +40,8 @@ def main [
                 _ => null,
             }
         }
-        | into record);
+        | into record
+    );
 
     let writes = {
         'maps/axiom/bindings/key_pos.toml': (
