@@ -39,19 +39,6 @@ $env.path ++= [
     ~/path,
 ];
 
-# zoxide (h):
-source ~/.zoxide.nu;
-export def --env --wrapped h [...args] {
-  if ($args | length) > 0 {
-    __zoxide_z ...$args;
-  };
-  clear;
-  print $"[ (pwd) ]";
-  ls -a | reject modified size
-}
-export alias hh = h ~;
-export alias hi = h ..;
-
 # alaises:
 alias reboot = sudo reboot;
 alias here = swaymsg exec $"alacritty --working-directory (pwd)";
@@ -66,7 +53,8 @@ export def --wrapped nixsh [...args] {
 
 # use modules:
 use universal;
-use universal/standard_toplevel.nu;
+use universal/standard_toplevel.nu *;
+use zoxide_h *;
 
 # end command:
 h
