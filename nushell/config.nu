@@ -55,7 +55,6 @@ export def --wrapped nixsh [...args] {
 use universal;
 use universal/standard_toplevel.nu *;
 use zoxide_h *;
-source ~/.zoxide.nu;
 
 # end command:
 h

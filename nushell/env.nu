@@ -22,3 +22,5 @@ const NU_LIB_DIRS = $NU_LIB_DIRS ++ [
 ];
 
 $env.SHELL = (which nu | get 0 | get path);
+
+use zoxide_h/env;
