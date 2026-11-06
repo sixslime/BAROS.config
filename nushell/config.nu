@@ -52,8 +52,7 @@ export def --wrapped nixsh [...args] {
 }
 
 # use modules:
-use universal;
-use universal/standard_toplevel.nu *;
+use universal/std;
 use zoxide_h *;
 
 # end command:
