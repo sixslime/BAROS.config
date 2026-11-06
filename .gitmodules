@@ -1,6 +1,6 @@
 [submodule "nushell/modules/universal"]
-	path = nushell/modules/universal
+	path = nushell/scripts/universal
 	url = git@github.com:sixslime/config.nushell.universal_modules.git
 [submodule "nushell/modules/zoxide_h"]
-	path = nushell/modules/zoxide_h
+	path = nushell/scripts/zoxide_h
 	url = git@github.com:sixslime/config.nushell.zoxide_h.git

@@ -17,10 +17,6 @@
 # You can remove these comments if you want or leave
 # them for future reference
 
-const NU_LIB_DIRS = $NU_LIB_DIRS ++ [
-    $"($nu.default-config-dir)/modules"
-];
-
 $env.SHELL = (which nu | get 0 | get path);
 
 source ./modules/zoxide_h/source_env.nu;
