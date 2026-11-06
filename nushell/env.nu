@@ -19,4 +19,4 @@
 
 $env.SHELL = (which nu | get 0 | get path);
 
-source ./modules/zoxide_h/source_env.nu;
+source zoxide_h/source_env.nu;
