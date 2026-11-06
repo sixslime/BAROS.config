@@ -52,7 +52,7 @@ export def --wrapped nixsh [...args] {
 }
 
 # use modules:
-use universal/std;
+use universal/std *;
 use zoxide_h *;
 
 # end command:
