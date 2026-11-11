@@ -441,7 +441,7 @@ def fetchTransformOperation [
             }
         ),
         {composite: $compositeName} => (
-            let fetched = fetchCompositeOperation $resourceRegistry $compositeName ($transform.args?) --compositeChain $compositeChain;
+            let fetched = fetchCompositeOperation $resourceRegistry $compositeName ($transform.c_args?) --compositeChain $compositeChain;
             {
                 registry: $fetched.registry,
                 operation: $fetched.operation,

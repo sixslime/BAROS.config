@@ -9,9 +9,9 @@ transform = { map = "map_1" }
 [[passes.layers]]
 # functions pass the capture to stdin and read stdout.
 # 'args' get passed as positional args, may be omitted for none.
-transform = { function = 'surround.nu', args = ['(', ')'] }
+transform = { function = 'surround', args = ['(', ')'] }
 [[passes.layers]]
 files = ["nvim/**"]
 transform = { map = "map_2"}
 [[passes.layers]]
-transform = { composite = 'sequence_1'}
+transform = { composite = 'sequence_1', c_args = ['foo', 'bar']}

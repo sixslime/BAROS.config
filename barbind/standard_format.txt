@@ -3,7 +3,7 @@ something like:
 @<~(left):~[action]>
 
 gets axiom bound to:
-@<#(o):#[alt]>
+@<o:alt>
 
 then gets program-specific bound to things like:
 - A-o
@@ -19,5 +19,5 @@ capture chars can and should probably be dynamic.
 
 cases:
 - multiple mods:
-    @<#(left):#[alt]&#[meta]>
+    @<~(left):alt&#[meta]>
     ~ use '&'

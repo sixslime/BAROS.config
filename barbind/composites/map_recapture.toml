@@ -1,0 +1,11 @@
+[meta]
+c_args = [
+    'map',
+    'recapture_start',
+    'recapture_end',
+]
+[composite]
+sequence = [
+    { map = {c_arg = 'map'}},
+    { function = 'surround', args = [{c_arg = 'recapture_start'}, {c_arg = 'recapture_end' }]}
+]

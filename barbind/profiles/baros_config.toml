@@ -1,0 +1,28 @@
+
+# key aliases ~():
+[[passes]]
+capture = {start = '~(', end = ')', escape = 'BBESC~()'}
+files = ["**"]
+
+[[passes.layers]]
+transform = { map = 'axiom/bindings/key_action' }
+
+# modifier aliases ~[]:
+[[passes]]
+capture = {start = '~[', end = ']', escape = '(BBESC~[]'}
+files = ["**"]
+
+[[passes.layers]]
+transform = { composite = 'map_recapture', c_args = ['axiom/bindings/modifier', '#[', ']']}
+
+
+[[passes.layers]]
+transform = { composite = 'map_recapture', c_args = ['axiom/bindings/key_action', '#(', ')']}
+
+
+[[passes]]
+capture = {start = '@<', end = '>', escape = '(bbesc#)'}
+files = ["**"]
+
+[[passes.layers]]
+files = ["nvim/**"]

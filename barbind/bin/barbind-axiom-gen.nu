@@ -17,6 +17,7 @@ def main [
         'shift',
         'altgr',
     ];
+    const modifierSeparator = '&';
 
     let axiom = {
         keyboard: {
@@ -57,7 +58,29 @@ def main [
             }
             | to toml;
         ),
-        'maps/axiom/bindings/key_action.toml': (
+        'maps/axiom/bindings/modifier_pos.toml': (
+            let map = $axiom.keyboard.layout.main | items {|pos, press|
+                if ($press | describe) != record { null } else {
+                    $press.layer?
+                    | if ($in | is-not-empty) {
+                        let pressLayer = $in;
+                        let layerMods = $layerModMap | get $pressLayer -o | default -e {
+                            error make {
+                                msg: $"key-pos '($pos)' activates layer '($pressLayer)', which either does not exist or does not have any modifiers."
+                            }
+                        };
+                        { $pos: ($layerMods | str join $modifierSeparator) }
+                    }
+                }
+            }
+            | where $in != null
+            | into record;
+            {
+                map: $map
+            }
+            | to toml;
+        ),
+        'maps/axiom/bindings/key_alias.toml': (
             let map = $axiom.keyboard.aliases.keys | items {|alias, pos|
                 let press = $axiom.keyboard.layout.main | get $pos -o | default $pos;
                 if ($press | describe) != string {
@@ -74,7 +97,7 @@ def main [
             }
             | to toml;
         ),
-        'maps/axiom/bindings/modifier.toml': (
+        'maps/axiom/bindings/modifier_alias.toml': (
             let map = $axiom.keyboard.aliases.modifiers | items {|alias, pos|
                 let press = $axiom.keyboard.layout.main | get $pos -o | default $pos;
                 let pressLayer = try { $press | get layer } catch {
@@ -87,7 +110,7 @@ def main [
                         msg: $"modifier alias '($alias)' points to key-pos '($pos)', which is bound to a layer that does not exist, '($pressLayer)'",
                     }
                 };
-                { $alias: ($layerMods | str join '+') }
+                { $alias: ($layerMods | str join $modifierSeparator) }
             }
             | into record;
             {
