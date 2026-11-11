@@ -1,0 +1,16 @@
+vim.opt.number = true
+vim.opt.cursorline = true
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+vim.opt.scrolloff = 4
+vim.opt.relativenumber = true
+vim.opt.mouse = ""
+vim.opt.tabstop = 4
+vim.opt.softtabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.expandtab = true
+vim.opt.clipboard = 'unnamedplus'
+vim.opt.title = true
+vim.opt.timeoutlen = 400
+vim.opt.cmdheight = 1
+vim.opt.iskeyword = "a-z,A-Z,48-57,_,-,:"

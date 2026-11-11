@@ -1,0 +1,44 @@
+
+-- FUNCTIONS:
+local function nsearch(back)
+    vim.opt.hlsearch = false
+    if back then
+        return '?'
+    else
+        return '/'
+    end
+end
+
+local function gsearch()
+    vim.opt.hlsearch = true
+    return ':%s/'
+end
+
+local primary = {
+    modes = {
+        'n',
+        'o',
+        'p',
+    },
+    bindings = {
+        ["@<~(left)>"] = "h",
+        ["@<~(right)>"] = "l",
+        ["@<~(up)>"] = "k",
+        ["@<~(down)>"] = "j",
+        ["@<~(select)>"] = "v",
+        ["@<~(new)>"] = "A",
+        ["@<~(insert)>"] = "i",
+        ["@<~(delete)>"] = '"xx',
+        ["@<~(command)>"] = ":",
+    },
+    unbindings = {
+        "r"
+    },
+}
+
+for k, v in pairs(primary.bindings) do
+    vim.keymap.set(primary.modes, k, v, { noremap = true })
+end
+for _, v in ipairs(primary.unbindings) do
+    vim.keymap.set(primary.modes, v, '<Nop>', {})
+end

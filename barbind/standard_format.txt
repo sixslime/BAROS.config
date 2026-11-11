@@ -1,16 +1,16 @@
 
 something like:
-<[action]:(left)>
+@<~(left):~[action]>
 
 gets axiom bound to:
-<#[alt]:#(o)>
+@<#(o):#[alt]>
 
 then gets program-specific bound to things like:
 - A-o
 - Alt+o
 
 functions could turn something like:
-<#[shift]:#(j)>
+@<#(j):#[shift]>
 
 into:
 J
@@ -19,5 +19,5 @@ capture chars can and should probably be dynamic.
 
 cases:
 - multiple mods:
-    <#[alt]+#[meta]:#(left)>
-    ~ use '+'
+    @<#(left):#[alt]&#[meta]>
+    ~ use '&'
