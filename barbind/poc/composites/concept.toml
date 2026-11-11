@@ -1,5 +1,6 @@
 [meta]
 # this composite must be passed with 3 args via { composite = <this>, args = [<a>, <b>, <c>] }
+# can be omitted for none
 c_args = [
     'a',
     'b',
