@@ -30,6 +30,8 @@ local primary = {
         ["@<~(insert)>"] = "i",
         ["@<~(delete)>"] = '"xx',
         ["@<~(command)>"] = ":",
+        ["@<~(up):~[action]>"] = "<c-u>",
+        ["@<~(down):~[action]>"] = "<c-d>",
     },
     unbindings = {
         "r"
