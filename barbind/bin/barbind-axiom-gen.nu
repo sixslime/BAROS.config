@@ -102,14 +102,12 @@ def main [
         ),
         'maps/axiom/bindings/key_alias.toml': (
             let map = $axiom.keyboard.aliases.keys | items {|alias, pos|
-                let press = $axiom.keyboard.layout.main | get $pos -o | default $pos;
-                if ($press | describe) != string {
+                if ($pos | describe) != string {
                     error make {
-                        msg: $"key alias '($alias)' points to key-pos '($pos)', which is bound to '($press)'; expected a direct key/string \(ex: 'j')",
+                        msg: $"expected a string value for key alias '($alias)', got '($pos)'",
                     }  
-                } else {
-                    { $alias: $press }
-                }
+                };
+                { $alias: $pos }
             }
             | into record;
             {
@@ -119,18 +117,17 @@ def main [
         ),
         'maps/axiom/bindings/modifier_alias.toml': (
             let map = $axiom.keyboard.aliases.modifiers | items {|alias, pos|
-                let press = $axiom.keyboard.layout.main | get $pos -o | default $pos;
-                let pressLayer = try { $press | get layer } catch {
+                if ($pos | describe) != string {
                     error make {
-                        msg: $"modifier alias '($alias)' points to key-pos '($pos)', which is bound to '($press)'; expected a modifier layer \(ex: { layer = 'meta' })",
+                        msg: $"expected a string value for modifier alias '($alias)', got '($pos)'",
+                    }  
+                };
+                if ($axiom.keyboard.layout.main | get $pos -o | default {} | get layer -o | is-empty) {
+                    error make {
+                        msg: $"modifier aliases must point to explicitly-bound layer keys, '($alias)' points to key pos '$($pos)', which is not explicitly bound to a layer.",
                     }
                 };
-                let layerMods = $layerModMap | get $pressLayer -o | default {
-                    error make {
-                        msg: $"modifier alias '($alias)' points to key-pos '($pos)', which is bound to a layer that does not exist, '($pressLayer)'",
-                    }
-                };
-                { $alias: ($layerMods | str join $modifierSeparator) }
+                { $alias: $pos }
             }
             | into record;
             {
