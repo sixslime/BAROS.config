@@ -18,6 +18,14 @@ def main [
         'altgr',
     ];
     const modifierSeparator = '&';
+    const shiftLayerName = 'shift'
+
+    let alphabetShiftMap = 'abcdefghijklmnopqrstuvwxyz'
+    | split chars
+    | each {
+        { $in: ($in | str uppercase) }
+    }
+    | into record;
 
     let axiom = {
         keyboard: {
@@ -30,7 +38,8 @@ def main [
     | each { { $in: [$in] } }
     | into record
     | merge (
-        $axiom.keyboard.layout.layer
+        $axiom.keyboard.layout.layer?
+        | default {}
         | columns
         | each {
             match ($in | split row '--' -n 2) {
@@ -44,6 +53,17 @@ def main [
         | into record
     );
 
+    let layerValueMap = $axiom.keyboard.layout.layer?
+    | default {}
+    | items {|rawName, layerMap|
+        let layerName = $rawName
+        | split column '--' name _
+        | first
+        | get name;
+        { $layerName: $layerMap }
+    }
+    | into record;
+
     let writes = {
         'maps/axiom/bindings/key_pos.toml': (
             let map = $axiom.keyboard.layout.main | items {|pos, press|
@@ -56,7 +76,7 @@ def main [
             {
                 map: $map
             }
-            | to toml;
+            | to toml
         ),
         'maps/axiom/bindings/modifier_pos.toml': (
             let map = $axiom.keyboard.layout.main | items {|pos, press|
@@ -78,7 +98,7 @@ def main [
             {
                 map: $map
             }
-            | to toml;
+            | to toml
         ),
         'maps/axiom/bindings/key_alias.toml': (
             let map = $axiom.keyboard.aliases.keys | items {|alias, pos|
@@ -95,7 +115,7 @@ def main [
             {
                 map: $map
             }
-            | to toml;
+            | to toml
         ),
         'maps/axiom/bindings/modifier_alias.toml': (
             let map = $axiom.keyboard.aliases.modifiers | items {|alias, pos|
@@ -116,8 +136,25 @@ def main [
             {
                 map: $map
             }
-            | to toml;
+            | to toml
         ),
+        'maps/axiom/bindings/shift_pos.toml': (
+            let explicitShiftMap = $layerValueMap
+            | get $shiftLayerName -o
+            | default {}
+            | items {|pos, press|
+                if ($press | describe) != string { null } else {
+                    { $pos: $press }
+                }
+            }
+            | where $in != null
+            | into record;
+            let map = $alphabetShiftMap | merge $explicitShiftMap;
+            {
+                map: $map,
+            }
+            | to toml
+        )
     };
 
     cd $configDir;

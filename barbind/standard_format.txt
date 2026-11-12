@@ -3,17 +3,24 @@ something like:
 @<~(left):~[action]>
 
 gets axiom bound to:
+@<#(s):#[leftalt]>
+
+gets finally bound to:
 @<o:alt>
 
 then gets program-specific bound to things like:
 - A-o
 - Alt+o
 
-functions could turn something like:
+something like:
 @<#(j):#[shift]>
 
-into:
+gets functioned to:
+@<!(j)>
+
+then mapped to:
 J
+
 
 capture chars can and should probably be dynamic.
 
