@@ -7,5 +7,5 @@ c_args = [
 [composite]
 sequence = [
     { map = {c_arg = 'map'}},
-    { function = 'util/surround', args = [{c_arg = 'recapture_start'}, {c_arg = 'recapture_end' }]}
+    { function = 'util/surround.nu', args = [{c_arg = 'recapture_start'}, {c_arg = 'recapture_end' }]}
 ]

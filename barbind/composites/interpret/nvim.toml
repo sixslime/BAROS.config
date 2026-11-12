@@ -1,4 +1,4 @@
 [composite]
 sequence = [
-
+    { function = 'interpret-src/nvim/main.nu' }
 ]
