@@ -6,21 +6,14 @@
 capture = {start = '~(', end = ')', escape = 'BBESC~()'}
 files = ["**"]
 [[passes.layers]]
-transform = { map = 'axiom/bindings/key_alias' }
+transform = { composite = 'util/map_recapture', c_args = ['axiom/bindings/key_alias', '#(', ')'] }
 
 # modifier aliases ~[]:
 [[passes]]
 capture = {start = '~[', end = ']', escape = 'BBESC~[]'}
 files = ["**"]
 [[passes.layers]]
-transform = { map = 'axiom/bindings/modifier_alias' }
-
-# key positions #():
-[[passes]]
-capture = {start = '#(', end = ')', escape = 'BBESC#()'}
-files = ["**"]
-[[passes.layers]]
-transform = { map = 'axiom/bindings/key_pos' }
+transform = { composite = 'util/map_recapture', c_args = ['axiom/bindings/modifier_alias', '#[', ']'] }
 
 # modifier positions #[]:
 [[passes]]
@@ -29,10 +22,33 @@ files = ["**"]
 [[passes.layers]]
 transform = { map = 'axiom/bindings/modifier_pos' }
 
-# -- PROGRAM INTERPRETS @<> --
-
+# shift convert @<> -> $<>, #() -> !():
 [[passes]]
 capture = {start = '@<', end = '>', escape = 'BBESC@<>'}
+files = ["**"]
+[[passes.layers]]
+transform = { function = 'axiom/shift_convert.nu', args = ['#(', ')', '!(', ')'] }
+[[passes.layers]]
+transform = { function = 'util/surround.nu', args = ['$<', '>']}
+
+# unshifted key positions #():
+[[passes]]
+capture = {start = '#(', end = ')', escape = 'BBESC#()'}
+files = ["**"]
+[[passes.layers]]
+transform = { map = 'axiom/bindings/key_pos' }
+
+# shifted key positions !():
+[[passes]]
+capture = {start = '!(', end = ')', escape = 'BBESC!()'}
+files = ["**"]
+[[passes.layers]]
+transform = { map = 'axiom/bindings/shift_pos' }
+
+# -- PROGRAM INTERPRETS $<> --
+
+[[passes]]
+capture = {start = '$<', end = '>', escape = 'BBESC$<>'}
 files = ["**"]
 
 # nvim:
