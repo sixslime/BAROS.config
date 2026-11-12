@@ -1,6 +1,0 @@
-[[passes]]
-files = ['**']
-capture = {start = '(', end = ')'}
-layers = [
-    { transform = { composite = 'quxhi' }},
-]

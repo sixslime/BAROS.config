@@ -1,28 +1,41 @@
 
+# -- AXIOM --
+
 # key aliases ~():
 [[passes]]
 capture = {start = '~(', end = ')', escape = 'BBESC~()'}
 files = ["**"]
-
 [[passes.layers]]
-transform = { map = 'axiom/bindings/key_action' }
+transform = { map = 'axiom/bindings/key_alias' }
 
 # modifier aliases ~[]:
 [[passes]]
-capture = {start = '~[', end = ']', escape = '(BBESC~[]'}
+capture = {start = '~[', end = ']', escape = 'BBESC~[]'}
 files = ["**"]
-
 [[passes.layers]]
-transform = { composite = 'map_recapture', c_args = ['axiom/bindings/modifier', '#[', ']']}
+transform = { map = 'axiom/bindings/modifier_alias' }
 
-
+# key positions #():
+[[passes]]
+capture = {start = '#(', end = ')', escape = 'BBESC#()'}
+files = ["**"]
 [[passes.layers]]
-transform = { composite = 'map_recapture', c_args = ['axiom/bindings/key_action', '#(', ')']}
+transform = { map = 'axiom/bindings/key_pos' }
 
+# modifier positions #[]:
+[[passes]]
+capture = {start = '#[', end = ']', escape = 'BBESC#[]'}
+files = ["**"]
+[[passes.layers]]
+transform = { map = 'axiom/bindings/modifier_pos' }
+
+# -- PROGRAM INTERPRETS @<> --
 
 [[passes]]
-capture = {start = '@<', end = '>', escape = '(bbesc#)'}
+capture = {start = '@<', end = '>', escape = 'BBESC@<>'}
 files = ["**"]
 
+# nvim:
 [[passes.layers]]
 files = ["nvim/**"]
+transform = { composite = 'interpret/nvim' }

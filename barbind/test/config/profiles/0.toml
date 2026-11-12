@@ -1,6 +1,0 @@
-[[passes]]
-files = ['**']
-capture = {start = '(', end = ')', escape = '^'}
-layers = [
-    { transform = { map = 'foobarbaz' } },
-]

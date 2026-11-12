@@ -1,5 +1,0 @@
-[composite]
-sequence = [
-    { map = 'quxadd' },
-    { function = 'surround', args = ['', '!']},
-]
