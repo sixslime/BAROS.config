@@ -1,0 +1,577 @@
+#!/env nu
+
+export const registryDirNames = {
+    profile: 'profiles',
+    map: 'maps',
+    function: 'functions',
+    composite: 'composites',
+};
+
+export const configDirEnvName = "BARBIND_CONFIG_DIR";
+
+export def log [
+    verbosityRequirement: int,
+    message: any
+]: nothing -> nothing {
+    do $env._BARBIND.logClosure $verbosityRequirement $message;
+}
+
+export def createLogClosure [
+    verboseFlag: int
+]: nothing -> closure {
+    {|verbosityRequirement, message|
+        if $verboseFlag >= $verbosityRequirement {
+            $message | print;
+        };
+    }
+}
+
+export def isBarbindFilePath []: string -> bool {
+    str ends-with $".($env._BARBIND.barbindExtension)"
+}
+
+export def stripBarbindExtension []: string -> string {
+    if ($in | isBarbindFilePath) {
+        str substring ..((($in | str length) - 1) - (($env._BARBIND.barbindExtension | str length) + 1))
+    } else {
+        $in
+    }
+}
+
+export def applyProfile [
+    resourceRegistry: record<baseDir: string, map: record>,
+    profile: record
+]: nothing -> record<registry: record<baseDir: string, map: record>, writes: record> {
+    try {
+        $profile.passes | reduce -f {
+            writes: {},
+            registry: $resourceRegistry
+        } { |pass, acc|
+            log 1 "> Starting pass";
+            let passFilePaths: list<string> = $pass.files | each { glob $in -D } | flatten | uniq;
+            log 2 $pass;
+            let captureMap = $passFilePaths
+            | each { |passFilePath|
+                let fileContents = $acc.writes
+                | get $passFilePath -o
+                | default { open $passFilePath -r };
+                log 2 $"-- CONTENTS --\n ($fileContents)\n----------";
+                let captureSegments: list<record<text:string, isCaptured:bool>> = if ($passFilePath | isBarbindFilePath) {
+                    getCaptureSegments $fileContents $pass.capture
+                } else {
+                    getIdentityCaptureSegments $fileContents
+                };
+                log 2 " - capture segments:";
+                log 2 $captureSegments;
+                {
+                    key: $passFilePath,
+                    value: $captureSegments,
+                }
+            }
+            | transpose -idr;
+            let applied = applyLayers $acc.registry $captureMap $pass.layers;
+            let writes = $applied.captureMap
+            | items {|path, segments|
+                {
+                    key: $path,
+                    value: ($segments | get text | str join),
+                }
+            }
+            | transpose -idr;
+            log 1 "< End pass";
+            {
+                registry: $applied.registry,
+                writes: $writes,
+            }
+        }
+    } catch {
+        error make {
+            msg: "Error while applying profile."
+        };
+    };  
+}
+
+export def applyLayers [
+    resourceRegistry: record<baseDir: string, map: record>,
+    captureMap: record,
+    layers: list<record>
+]: nothing -> record<registry: record<baseDir: string, map: record>, captureMap: record> {
+    mut operationMap: record = $captureMap
+    | columns
+    | each { {key: $in, value: []}}
+    | transpose -idr;
+    mut registry = $resourceRegistry;
+    let capturePaths = $captureMap | columns;
+    for $layer in $layers {
+        let applyingPaths = if $layer.files? != null {
+            $layer.files
+            | each { glob $in -D }
+            | flatten
+            | uniq
+            | intersect $capturePaths
+        } else { $capturePaths };
+        log 1 $" > applying layer to ($applyingPaths | length) files";
+        log 2 $layer.transform;
+        log 2 $applyingPaths;
+        for $applyingPath in $applyingPaths {
+            let transformFetch = fetchTransformOperation $registry $layer.transform;
+            $registry = $transformFetch.registry;
+            $operationMap = $operationMap
+            | upsert $applyingPath {append $transformFetch.operation};
+        };
+    };
+    let operationMap = $operationMap;
+    let registry = $registry;
+    let appliedMap = $operationMap
+    | items {|k, v| {path: $k, operations: $v} }
+    | par-each {
+        let path = $in.path;
+        let operations = $in.operations;
+        let inputSegments = $captureMap | get $path -o;
+        if $inputSegments == null { return null; }
+        let outputSegments = $inputSegments
+        | update text {|segment|
+            if $segment.isCaptured {
+                $operations
+                | reduce -f $segment.text {|operation, text| ($text | do $operation) }
+            } else {
+                $segment.text
+            }
+        };
+        {
+            path: $path,
+            value: $outputSegments,
+        }
+    }
+    | transpose -idr;
+
+    {
+        registry: $registry,
+        captureMap: $appliedMap,
+    }
+}
+
+export def getCaptureSegments [
+    text: string, 
+    capture: record<start: string, end: string>
+]: nothing -> list<record<text:string, isCaptured:bool>> {
+    mut textBuffer: string = $text;
+    mut segments: list<record<text:string, isCaptured:bool>> = [];
+    mut captureStarted = false;
+    mut noRemainingEscapes = false;
+    let lengths = {
+        escape: (if $capture.escape? != null {
+            $capture.escape | str length -g;
+        } else {
+            0
+        }),
+        start: ($capture.start | str length -g),
+        end: ($capture.end | str length -g),
+    };
+    loop {
+        let nextIndexOf = {
+            escape: (if ($noRemainingEscapes == false) and ($capture.escape? != null) {
+                $textBuffer | str index-of $capture.escape -g
+            } else {
+                $noRemainingEscapes = true;
+                -1
+            }),
+            capture: ($textBuffer | str index-of -g (if $captureStarted {
+                $capture.end
+            } else {
+                $capture.start
+            })),
+        };
+        if $nextIndexOf.capture == -1 {
+            $segments = $segments | append {
+                text: (if $capture.escape? == null {
+                    $textBuffer
+                } else {
+                    $textBuffer | str replace -a $capture.escape ''
+                }),
+                isCaptured: false,
+            };
+            break;
+        };
+        if ($nextIndexOf.escape != -1) and ($nextIndexOf.escape < $nextIndexOf.capture) and (not $captureStarted) {
+            let escapedCharIndex = ($nextIndexOf.escape + $lengths.escape);
+            let segmentText = [
+                ($textBuffer | str substring -g ..($nextIndexOf.escape - 1)),
+                ($textBuffer | str substring -g $escapedCharIndex..$escapedCharIndex),
+            ] | str join;
+            $segments = $segments | append {
+                text: $segmentText,
+                isCaptured: false,
+            };
+            $textBuffer = $textBuffer | str substring -g ($escapedCharIndex + 1)..;
+            continue;
+        };
+        if $captureStarted {
+            $captureStarted = false;
+            let capturedText = $textBuffer | str substring -g ..($nextIndexOf.capture - 1);
+            let continueIndex = ($nextIndexOf.capture + $lengths.end);
+            $segments = $segments | append {
+                text: $capturedText,
+                isCaptured: true,
+            };
+            $textBuffer = $textBuffer | str substring -g ($continueIndex)..;
+        } else {
+            $captureStarted = true;
+            let capturedText = if ($nextIndexOf.capture > 0) {
+                $textBuffer | str substring -g ..($nextIndexOf.capture - 1)
+            } else { '' };
+            let continueIndex = ($nextIndexOf.capture + $lengths.start);
+            if not ($capturedText | is-empty) {
+                $segments = $segments | append {
+                    text: $capturedText,
+                    isCaptured: false,
+                };
+            }
+            $textBuffer = $textBuffer | str substring -g ($continueIndex)..;
+        };
+    };
+    $segments
+}
+
+export def getIdentityCaptureSegments [
+    text: string
+]: nothing -> list<record<text:string, isCaptured:bool>> {
+    [ { text: $text, isCaptured: false } ]
+}
+
+export def fetchMapLookup [
+    resourceRegistry: record<baseDir: string, map: record>, 
+    mapName: string,
+    --inheritChain: list<string> = [],
+]: nothing -> record<registry: record<baseDir: string, map: record>, lookup: record> {
+    log 1 $"> Creating lookup for map '($mapName)'"
+    if $mapName in $inheritChain {
+        error make {
+            msg: $"Map inheritance loop: ($inheritChain | append $mapName | str join ' -> ')"
+        };
+    };
+    let registryDirectory = $registryDirNames.map;
+    let loaded = loadResource $resourceRegistry $registryDirectory $mapName;
+    if $loaded.value.lookup? != null {
+        return {
+            registry: $loaded.registry,
+            lookup: $loaded.value.lookup,
+        };
+    };
+    let data = $loaded.value.data;
+    $data
+    | get meta.inherit -o
+    | default []
+    | reduce -f {registry: $loaded.registry, lookup: {}} {|inherit, acc|
+        let fetched = fetchMapLookup $acc.registry $inherit --inheritChain ($inheritChain | append $mapName);
+        {
+            registry: $fetched.registry,
+            lookup: ($acc.lookup | merge $fetched.lookup),
+        }
+    }
+    | update lookup {merge $data.map}
+    | do {
+        let lookup = $in.lookup;
+        $in | update registry {
+            upsert (getRegistryResourcePath $registryDirectory $mapName ['lookup']) $lookup
+        }
+    }
+}
+
+export def fetchFunctionOperation [
+    resourceRegistry: record<baseDir: string, map: record>,
+    functionPath: string,
+    args?: list<string>,
+]: nothing -> record<registry: record<baseDir: string, map: record>, operation: closure> {
+    let registryDirectory = $registryDirNames.function;
+    let args = $args | default [];
+    {
+        registry: $resourceRegistry,
+        operation: {
+            let call = {
+                command: ([$resourceRegistry.baseDir, $registryDirectory, $functionPath] | path join),
+                args: ([$in] | append $args),
+            };
+            log 2 $" - function '($functionPath)':";
+            log 2 $" $ ($call.command) ($call.args | str join ' ')";
+            let result = run-external $call.command ...$call.args | complete;
+            log 2 $result;
+            $result.stdout
+        },
+    }
+}
+
+export def fetchCompositeOperation [
+    resourceRegistry: record<baseDir: string, map: record>,
+    compositeName: string,
+    cArgs?: list<string>,
+    --compositeChain: list<string> = [],
+]: nothing -> record<registry: record<baseDir: string, map: record>, operation: closure> {
+    if $compositeName in $compositeChain {
+        error make {
+            msg: $"Composite reference loop: ($compositeChain | append $compositeName | str join ' -> ')"
+        };
+    };
+    let registryDirectory = $registryDirNames.composite;
+    let cArgs = $cArgs | default [];
+    let cArgsKey = $cArgs | to text -n;
+    let loaded = loadResource $resourceRegistry $registryDirectory $compositeName;
+    let cached = $loaded.value.argsMap? | map { get $cArgsKey -o } | map { where args == $cArgs | first };
+    if $cached != null {
+        return {
+            registry: $loaded.registry,
+            operation: $cached.operation,
+        };
+    };
+    let cArgIdentifiers = $loaded.value.data.meta?.c_args? | default [];
+    if ($cArgIdentifiers | length) != ($cArgs | length) {
+        error make {
+            msg: $"($cArgIdentifiers | length) c-args expected for composite '($compositeName)', but ($cArgs | length) were provided \(($cArgs))"
+        };
+    }
+    let cArgMap = if ($cArgIdentifiers | is-empty) {
+        {}
+    } else {
+        $cArgIdentifiers
+        | zip $cArgs
+        | each {
+            { key: $in.0, value: $in.1 }
+        }
+        | transpose -idr;
+    };
+    log 2 $" - c-arg map:";
+    log 2 $cArgMap;
+    let sequence = $loaded.value.data.composite.sequence;
+    $sequence
+    | reduce -f {registry: $loaded.registry, operation: { $in }} {|transform, acc|
+        let mappedTransform = $transform | recursiveCMap $cArgMap;
+        log 2 $" - cmap ($transform) -> ($mappedTransform)";
+        let fetched = fetchTransformOperation $acc.registry $mappedTransform --compositeChain ($compositeChain | append $compositeName);
+        {
+            registry: $fetched.registry,
+            operation: { do $acc.operation | do $fetched.operation },
+        }
+    }
+    | do {
+        let operation = $in.operation;
+        $in | update registry {
+            upsert (getRegistryResourcePath $registryDirectory $compositeName ['argsMap', $cArgsKey]) {
+                default []
+                | append {
+                    args: $cArgs,
+                    operation: $operation,
+                }
+            }
+        }
+    }
+}
+
+export def recursiveCMap [
+    cArgMap: record
+]: any -> any {
+    match $in {
+        {c_arg: $cArgName} => (
+            $cArgMap | get $cArgName -o | default {
+                error make {
+                    msg: $"No c-arg exists with identifier '($cArgName)'",
+                }
+            }
+        ),
+        {} => (
+            $in | items {|key, value|
+                {
+                    key: $key,
+                    value: ($value | recursiveCMap $cArgMap),
+                }
+            }
+            | transpose -idr
+        )
+        [..] => (
+            $in | each { recursiveCMap $cArgMap }
+        ),
+        _ => $in,
+    }
+}
+
+export def fetchTransformOperation [
+    resourceRegistry: record<baseDir: string, map: record>,
+    transform: record,
+    --compositeChain: list<string> = [],
+]: nothing -> record<registry: record<baseDir: string, map: record>, operation: closure> {
+    match $transform {
+        {map: $mapName} => (
+            let fetched = fetchMapLookup $resourceRegistry $mapName;
+            {
+                registry: $fetched.registry,
+                operation: {
+                    let capture = $in;
+                    if ($capture | is-empty) { return $capture };
+                    $fetched.lookup | get $capture -o | default $capture
+                },
+            }
+        ),
+        {function: $functionName} => (
+            let fetched = fetchFunctionOperation $resourceRegistry $functionName ($transform.args?);
+            {
+                registry: $fetched.registry,
+                operation: $fetched.operation,
+            }
+        ),
+        {composite: $compositeName} => (
+            let fetched = fetchCompositeOperation $resourceRegistry $compositeName ($transform.c_args?) --compositeChain $compositeChain;
+            {
+                registry: $fetched.registry,
+                operation: $fetched.operation,
+            }
+        ),
+        _ => (error make {
+            msg: $"Unknown transform type: ($transform)",
+        }),
+    }
+}
+
+export def getRegistryResourcePath [
+    directory: string,
+    resource: string,
+    path: list<string> = [],
+]: nothing -> cell-path {
+    ['map', $directory, $resource] | append $path | into cell-path
+}
+
+export def loadResource [
+    resourceRegistry: record<baseDir: string, map: record>, 
+    directory: string, 
+    resource: string,
+]: nothing -> record<registry: record<baseDir: string, map: record>, value: record<data: record>> {
+    log 1 $"> Fetching resource '($resource)' from config sub-directory '($directory)'";
+    let resourcePath: cell-path = getRegistryResourcePath $directory $resource;
+    let cached = $resourceRegistry | get $resourcePath -o;
+    if $cached != null {
+        log 1 $"< Resource already cached.";
+        log 2 $cached;
+        return {
+            registry: $resourceRegistry,
+            value: $cached,
+        };
+    };
+    let filePath = {
+        parent: ([$resourceRegistry.baseDir, $directory] | path join),
+        stem: $resource,
+        extension: 'toml',
+    }
+    | path join;
+    log 1 $" - Reading resource from ($filePath)"
+    let data = try { open $filePath } catch {
+        error make {
+            msg: $"'($resource)' in ($directory) \(($filePath)) could not be opened."
+        }
+    }
+    let value = {
+        data: $data,
+    };
+    let registry = $resourceRegistry | upsert $resourcePath $value;
+    let o = {
+        registry: $registry,
+        value: $value,
+    };
+    log 1 $"< Successfully loaded resource";
+    log 2 $value;
+    $o
+}
+
+export def getConfigDir [
+    configDir?: string
+]: nothing -> string {
+    if ($configDir | is-not-empty) and (($configDir | path type) != dir) {
+        error make {
+            msg: $"Directory does not exist: ($configDir)"
+        };
+    };
+    let envConfigDir = $env | get $configDirEnvName -o;
+    if ($envConfigDir | is-not-empty) {
+        if ($envConfigDir | path type) != dir {
+            error make {
+                msg: $"Config path set by environment variable '($configDirEnvName)' is not a directory."
+            }
+        }
+        return $envConfigDir | path expand;
+    };
+    let configDir = $configDir
+        | default {
+            [
+                ($env | get XDG_CONFIG_HOME -o | map { [$in, 'barbind'] | path join }),
+                ($env | get HOME -o | map { [$in, '.config', 'barbind'] | path join }),
+                "/etc/barbind"
+            ]
+            | where $it != null
+            | where (($it | path type) == dir)
+            | first;
+        };
+    if ($configDir | is-empty) {
+        error make {
+            msg: "No valid default config directories found. Use --configDir option."
+        };
+    };
+    return $configDir | path expand;
+}
+
+export def loadProfile [
+    configDir: string,
+    profilePath: string
+]: nothing -> record {
+    log 1 $"> Loading profile '($profilePath)'"
+    let filePath = {
+        parent: ([$configDir, $registryDirNames.profile] | path join),
+        stem: $profilePath,
+        extension: 'toml',
+    }
+    | path join;
+
+    if ($filePath | path type) != file {
+        error make {
+            msg: $"Profile '($profilePath)' does not exist \(expected file at ($filePath))"
+        }
+    };
+    
+    let o = open $filePath
+    | default {
+        error make {
+            msg: $"Could not parse profile file ($filePath)"
+        }
+    };
+
+    log 1 $"< Profile loaded from file: ($filePath)";
+    log 2 $o;
+    $o
+}
+
+export def map [
+    func: closure
+]: any -> any {
+    if $in == null { null } else { $in | do $func $in }
+}
+
+export def stripExtension [
+    extension?: string
+]: string -> string {
+    if ($extension | is-not-empty) {
+        $in | str substring ..(-1 - ($extension | str length))
+    } else {
+        $in
+    }
+}
+
+export def listRegistry [
+    configDir: oneof<string, nothing>,
+    registryDirName: string,
+    extension?: string,
+]: nothing -> table<name: string, file:string> {
+    let registryDir = $"(getConfigDir $configDir)/($registryDirName)";
+    glob $"($registryDir)/*($extension)"
+    | each {
+        let name = $in
+        | path relative-to $registryDir
+        | stripExtension $extension;
+        { name: $name, file: $in }
+    }
+}
