@@ -39,11 +39,19 @@ let specialKeyMap = [
     '|': 'Bar',
 };
 
+# because keys will be quoted in lua, need to escape '"'
+const escapeMap = {
+    '"': '\'
+}
+
 def transform []: string -> string {
     let binding = $in | parseBinding;
     let specialKey = $specialKeyMap | get $binding.key -o;
     let doAngleBrackets = ($binding.modifiers | is-not-empty) or ($specialKey | is-not-empty);
-    let key = $specialKey | default $binding.key;
+    let key = $specialKey | default {
+        let escapeChar = $escapeMap | get $binding.key -o;
+        $"($escapeChar)($binding.key)"
+    };
     let bindBody = if ($binding.modifiers | is-not-empty) {
         let modStr = $binding.modifiers
         | each { $modMap | get $in -o }
