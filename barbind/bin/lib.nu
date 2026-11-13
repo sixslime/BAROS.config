@@ -567,7 +567,7 @@ export def listRegistry [
     extension?: string,
 ]: nothing -> table<name: string, file:string> {
     let registryDir = $"(getConfigDir $configDir)/($registryDirName)";
-    glob $"($registryDir)/*($extension)"
+    glob $"($registryDir)/**/*($extension)" -D
     | each {
         let name = $in
         | path relative-to $registryDir

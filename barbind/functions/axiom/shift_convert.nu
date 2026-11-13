@@ -1,6 +1,6 @@
 #!/env nu
 
-use ../lib/axiom.nu [
+use $"(path self)/.../lib/axiom.nu" [
     parseBinding,
     expressBinding,
 ]

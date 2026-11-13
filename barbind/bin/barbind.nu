@@ -1,6 +1,6 @@
 #!/env nu
 
-use ./lib.nu *;
+use $"(path self)/../lib.nu" *;
 
 # can set default config dir with env.BARBIND_CONFIG_DIR
 
@@ -82,5 +82,5 @@ def "main list functions" [
 def "main list composites" [
     --config-dir (-c): string,
 ]: nothing -> table<name: string, file: string> {
-    listRegistry $config_dir $registryDirNames.composite
+    listRegistry $config_dir $registryDirNames.composite '.toml'
 }
