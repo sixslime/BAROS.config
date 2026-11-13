@@ -1,6 +1,7 @@
 #!/env nu
 
-use $"(path self)/../lib.nu" *;
+const selfDir = (path self | path expand | path dirname);
+use ($selfDir | path join 'lib.nu') *;
 
 # can set default config dir with env.BARBIND_CONFIG_DIR
 

@@ -1,6 +1,7 @@
 #!/env nu
 
-use $"(path self)/..../lib/axiom.nu" [
+const selfDir = (path self | path expand | path dirname);
+use ($selfDir | path join '.../lib/axiom.nu') [
     parseBinding
 ];
 
