@@ -1,6 +1,9 @@
 #!/env nu
 
-use ../lib/axiom.nu *;
+use ../lib/axiom.nu [
+    parseBinding,
+    expressBinding,
+]
 
 def main [
     capture: string,
