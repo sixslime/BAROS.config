@@ -13,24 +13,27 @@ def main [
     newCaptureStart: string,
     newCaptureEnd: string,
 ] {
-    let binding = $capture | parseBinding;
-    $binding.modifiers | if ('shift' not-in $in) or ('control' in $in) {
-        return $capture;
-    };
-    let key = $binding.key
-    | parse $"($oldCaptureStart){value}($oldCaptureEnd)"
-    | first
-    | get value -o
-    | if ($in | is-not-empty) {
-        $"($newCaptureStart)($in)($newCaptureEnd)"
-    } else {
-        $binding.key
-    };
-    let modifiers = $binding.modifiers | difference ['shift'];
-    let o = {
-        key: $key,
-        modifiers: $modifiers,
-    }
-    | expressBinding;
-    print -n $o;
+    print -n (do {
+        let binding = $capture | parseBinding;
+        $binding.modifiers | if ('shift' not-in $in) or ('control' in $in) {
+            return $capture;
+        };
+        let key = $binding.key
+        | parse $"($oldCaptureStart){value}($oldCaptureEnd)"
+        | first
+        | get value -o
+        | if ($in | is-not-empty) {
+            $"($newCaptureStart)($in)($newCaptureEnd)"
+        } else {
+            $binding.key
+        };
+        print $binding;
+        let modifiers = $binding.modifiers | difference ['shift'];
+        {
+            key: $key,
+            modifiers: $modifiers,
+        }
+        | expressBinding
+    })
+    
 }
