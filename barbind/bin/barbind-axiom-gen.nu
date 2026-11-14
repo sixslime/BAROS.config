@@ -80,17 +80,15 @@ def main [
         ),
         'maps/axiom/bindings/modifier_pos.toml': (
             let map = $axiom.keyboard.layout.main | items {|pos, press|
-                if ($press | describe) != record { null } else {
-                    $press.layer?
-                    | if ($in | is-not-empty) {
-                        let pressLayer = $in;
-                        let layerMods = $layerModMap | get $pressLayer -o | default -e {
-                            error make {
-                                msg: $"key-pos '($pos)' activates layer '($pressLayer)', which either does not exist or does not have any modifiers."
-                            }
-                        };
-                        { $pos: ($layerMods | str join $modifierSeparator) }
-                    }
+                try { $press | get layer } catch { null }
+                | if ($in | is-not-empty) {
+                    let pressLayer = $in;
+                    let layerMods = $layerModMap | get $pressLayer -o | default -e {
+                        error make {
+                            msg: $"key-pos '($pos)' activates layer '($pressLayer)', which either does not exist or does not have any modifiers."
+                        }
+                    };
+                    { $pos: ($layerMods | str join $modifierSeparator) }
                 }
             }
             | where $in != null
