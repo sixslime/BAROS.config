@@ -57,7 +57,7 @@ export def applyProfile [
                 | default { open $passFilePath -r };
                 log 2 $"-- CONTENTS --\n ($fileContents)\n----------";
                 let captureSegments: list<record<text:string, isCaptured:bool>> = if ($passFilePath | isBarbindFilePath) {
-                    getCaptureSegments $fileContents $pass.capture
+                    getCaptureSegments $fileContents $pass.capture ($pass.preserve_escape? | default false)
                 } else {
                     getIdentityCaptureSegments $fileContents
                 };
@@ -153,8 +153,13 @@ export def applyLayers [
 
 export def getCaptureSegments [
     text: string, 
-    capture: record<start: string, end: string>
+    capture: record<start: string, end: string>,
+    preserveEscape: oneof<bool, record<inside: bool, outside: bool>>,
 ]: nothing -> list<record<text:string, isCaptured:bool>> {
+    let preserveEscape = $preserveEscape
+    | if ($in | describe) == bool {
+        { inside: $in, outside: $in }
+    } else $in;
     mut textBuffer: string = $text;
     mut segments: list<record<text:string, isCaptured:bool>> = [];
     mut captureStarted = false;
@@ -195,8 +200,17 @@ export def getCaptureSegments [
         };
         if ($nextIndexOf.escape != -1) and ($nextIndexOf.escape < $nextIndexOf.capture) {
             let escapedCharIndex = ($nextIndexOf.escape + $lengths.escape);
+            let cutoffIndex = (
+                let preserveThisEscape = $preserveEscape
+                | get (if $captureStarted { 'inside' } else { 'outside' });
+                if $preserveThisEscape {
+                    $escapedCharIndex
+                } else {
+                    $nextIndexOf.escape
+                }
+            ) - 1;
             let segmentAppendText = [
-                ($textBuffer | str substring -g ..($nextIndexOf.escape - 1)),
+                ($textBuffer | str substring -g ..$cutoffIndex)
                 ($textBuffer | str substring -g $escapedCharIndex..$escapedCharIndex),
             ] | str join;
             # create new segment if mismatched capture state (or no segment exists):

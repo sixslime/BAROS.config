@@ -1,10 +1,7 @@
 #!/env nu
 
-def main [capture: string, escapeSequence: string, ...escaped: string] {
-    let o = if ($capture in $escaped) {
-        $"($escapeSequence)($capture)"
-    } else {
-        $capture
-    };
+def main [capture: string, escapeSequence: string, escaped: string] {
+    let o = $capture
+    | str replace -a $escaped $"($escapeSequence)($escaped)";
     print -n $o;
 }

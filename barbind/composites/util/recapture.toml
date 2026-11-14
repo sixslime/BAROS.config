@@ -1,0 +1,11 @@
+[meta]
+c_args = [
+    'recapture_start',
+    'recapture_end',
+    'escape_sequence',
+]
+[composite]
+sequence = [
+    { function = 'util/escape.nu', args = [{c_arg = 'escape_sequence'}, {c_arg = 'recapture_end'}]},
+    { function = 'util/surround.nu', args = [{c_arg = 'recapture_start'}, {c_arg = 'recapture_end'}]},
+]
