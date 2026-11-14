@@ -22,7 +22,7 @@ export def expressBinding []: record<key: string, modifiers: list<string>> -> st
     | append (
         $binding.modifiers | if ($in | is-not-empty) {
             $"($bindingSeparator)($in | str join $modifierDelimiter)"
-        }
+        } else { '' }
     )
     | str join
 }
