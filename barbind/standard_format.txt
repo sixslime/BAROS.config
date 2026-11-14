@@ -1,22 +1,21 @@
 
 something like:
-@<~(left):~[action]>
-
+@|~_left_:~-action-|
 gets axiom bound to:
-@<#(s):#[leftalt]>
+@|#_s_:#-leftalt-|
 
 gets finally bound to:
-@<o:alt>
+@|o:alt|
 
 then gets program-specific bound to things like:
 - A-o
 - Alt+o
 
 something like:
-@<#(j):#[shift]>
+@|#_j_:#-shift-|
 
 gets functioned to:
-@<!(j)>
+$|!_j_|
 
 then mapped to:
 J

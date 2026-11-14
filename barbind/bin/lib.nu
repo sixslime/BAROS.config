@@ -193,16 +193,27 @@ export def getCaptureSegments [
             };
             break;
         };
-        if ($nextIndexOf.escape != -1) and ($nextIndexOf.escape < $nextIndexOf.capture) and (not $captureStarted) {
+        if ($nextIndexOf.escape != -1) and ($nextIndexOf.escape < $nextIndexOf.capture) {
             let escapedCharIndex = ($nextIndexOf.escape + $lengths.escape);
-            let segmentText = [
+            let segmentAppendText = [
                 ($textBuffer | str substring -g ..($nextIndexOf.escape - 1)),
                 ($textBuffer | str substring -g $escapedCharIndex..$escapedCharIndex),
             ] | str join;
-            $segments = $segments | append {
-                text: $segmentText,
-                isCaptured: false,
+            # create new segment if mismatched capture state (or no segment exists):
+            $segments | last
+            | if ($in.isCaptured != $captureStarted) or ($in | is-empty) {
+                $segments = $segments | append {
+                    text: '',
+                    isCaptured: $captureStarted,
+                };
             };
+            $segments = $segments
+            | slice ..-2
+            | append (
+                $segments | last | update text {
+                    [$in, $segmentAppendText] | str join
+                }
+            )
             $textBuffer = $textBuffer | str substring -g ($escapedCharIndex + 1)..;
             continue;
         };
