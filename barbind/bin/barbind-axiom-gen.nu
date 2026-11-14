@@ -83,11 +83,7 @@ def main [
                 try { $press | get layer } catch { null }
                 | if ($in | is-not-empty) {
                     let pressLayer = $in;
-                    let layerMods = $layerModMap | get $pressLayer -o | default -e {
-                        error make {
-                            msg: $"key-pos '($pos)' activates layer '($pressLayer)', which either does not exist or does not have any modifiers."
-                        }
-                    };
+                    let layerMods = $layerModMap | get $pressLayer -o | default { [''] };
                     { $pos: ($layerMods | str join $modifierSeparator) }
                 }
             }
