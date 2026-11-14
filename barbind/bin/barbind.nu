@@ -41,9 +41,9 @@ def main [
             let writePath = $write.path | path relative-to $readDir | stripBarbindExtension;
             mkdir ($writePath | path dirname);
             $write.text | save $writePath -f;
-            $writePath | path expand
+            { file: ($writePath | path expand), content: $write.text }
         }
-        | sort
+        | sort-by file
     }
 }
 
