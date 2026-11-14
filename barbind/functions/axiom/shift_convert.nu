@@ -32,5 +32,5 @@ def main [
         modifiers: $modifiers,
     }
     | expressBinding;
-    print -n o;
+    print -n $o;
 }
