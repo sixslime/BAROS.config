@@ -55,7 +55,7 @@ def transform []: string -> string {
     };
     let bindBody = if ($binding.modifiers | is-not-empty) {
         let modStr = $binding.modifiers
-        | each { $modMap | get $in -o }
+        | each {|mod| $modMap | get $mod -o }
         | str join '-';
         $"($modStr)-($key)"
     } else { $key };
