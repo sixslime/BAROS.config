@@ -27,9 +27,10 @@ def main [
         $binding.key
     };
     let modifiers = $binding.modifiers | difference ['shift'];
-    {
+    let o = {
         key: $key,
         modifiers: $modifiers,
     }
-    | expressBinding
+    | expressBinding;
+    print -n o;
 }
