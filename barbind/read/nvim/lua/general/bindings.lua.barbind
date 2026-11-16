@@ -40,7 +40,7 @@ local bind_groups = {
     },
 }
 
-for _ group in ipairs(bind_groups) do
+for _, group in ipairs(bind_groups) do
     for key, binding in pairs(group.bindings) do
         vim.keymap.set(group.modes, key, binding, group.opts)
     end
