@@ -14,33 +14,37 @@ local function gsearch()
     return ':%s/'
 end
 
-local primary = {
-    modes = {
-        'n',
-        'o',
-        'p',
-    },
-    bindings = {
-        ["@|~_left_|"] = "h",
-        ["@|~_right_|"] = "l",
-        ["@|~_up_|"] = "k",
-        ["@|~_down_|"] = "j",
-        ["@|~_select_|"] = "v",
-        ["@|~_new_|"] = "A",
-        ["@|~_insert_|"] = "i",
-        ["@|~_delete_|"] = '"xx',
-        ["@|~_command_|"] = ":",
-        ["@|~_up_:~-action-|"] = "<c-u>",
-        ["@|~_down_:~-action-|"] = "<c-d>",
-    },
-    unbindings = {
-        "r"
+local bind_groups = {
+    -- primary:
+    {
+        modes = { 'n', 'o', 'p' },
+        opts = {
+            noremap = true,
+        },
+        bindings = {
+            ["@|~_left_|"] = "h",
+            ["@|~_right_|"] = "l",
+            ["@|~_up_|"] = "k",
+            ["@|~_down_|"] = "j",
+            ["@|~_select_|"] = "v",
+            ["@|~_new_|"] = "A",
+            ["@|~_insert_|"] = "i",
+            ["@|~_delete_|"] = '"xx',
+            ["@|~_command_|"] = ":",
+            ["@|~_up_:~-action-|"] = "<c-u>",
+            ["@|~_down_:~-action-|"] = "<c-d>",
+        },
+        unbindings = {
+            'r'
+        },
     },
 }
 
-for k, v in pairs(primary.bindings) do
-    vim.keymap.set(primary.modes, k, v, { noremap = true })
-end
-for _, v in ipairs(primary.unbindings) do
-    vim.keymap.set(primary.modes, v, '<Nop>', {})
+for _ group in ipairs(bind_groups) do
+    for key, binding in pairs(group.bindings) do
+        vim.keymap.set(group.modes, key, binding, group.opts)
+    end
+    for _, key in ipairs(group.unbindings) do
+        vim.keymap.set(group.modes, key, '<Nop>', {})
+    end
 end
