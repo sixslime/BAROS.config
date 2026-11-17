@@ -17,7 +17,7 @@ end
 local bind_groups = {
     -- primary:
     {
-        modes = { 'n', 'o', 'p' },
+        modes = { 'n', 'o', 'v' },
         opts = {
             noremap = true,
         },
